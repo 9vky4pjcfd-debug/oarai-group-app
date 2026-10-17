@@ -5,7 +5,7 @@ import { router } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { AppHeader } from '@/components/AppHeader';
-import { Badge, Button, Card, Screen, SectionHeader } from '@/components/design-system';
+import { Button, Card, CardGrid, CardGridItem, Screen, SectionHeader } from '@/components/design-system';
 import { ContentGate } from '@/components/ContentGate';
 import { colors, radii, spacing, typography } from '@/constants';
 import { useHotels, useLocalized } from '@/features/content';
@@ -36,27 +36,13 @@ export function HomeScreen() {
 
       <SectionHeader eyebrow={t('hotels.eyebrow')} title={t('hotels.title')} description={t('hotels.subtitle')} />
       <ContentGate state={hotels} onRetry={hotels.reload}>
-        {(list) => <View style={styles.hotelList}>{list.map((hotel) => <HotelCard key={hotel.hotelId} hotel={hotel} />)}</View>}
+        {(list) => <CardGrid>{list.map((hotel) => <CardGridItem key={hotel.hotelId}><HotelCard hotel={hotel} /></CardGridItem>)}</CardGrid>}
       </ContentGate>
-
-      <SectionHeader title={t('home.liveTitle')} />
-      <View style={styles.statusGrid}>
-        <Pressable onPress={() => router.push('/(tabs)/facilities/bath-status')} style={styles.statusCell}>
-          <Ionicons color={colors.accent} name="water-outline" size={24} />
-          <Badge label={t('facilities.quiet')} tone="success" />
-          <Text style={styles.statusTitle}>{t('facilities.bath')}</Text>
-        </Pressable>
-        <Pressable onPress={() => router.push('/(tabs)/facilities/restaurant-status')} style={styles.statusCell}>
-          <Ionicons color={colors.accent} name="restaurant-outline" size={24} />
-          <Badge label={t('facilities.waitingParties', { count: 3 })} tone="warning" />
-          <Text style={styles.statusTitle}>{t('facilities.hinode')}</Text>
-        </Pressable>
-      </View>
 
       <SectionHeader title={t('home.explore')} />
       <View style={styles.quickGrid}>
         <QuickCard icon="bed-outline" label={t('rooms.title')} onPress={() => router.push('/(tabs)/stay')} />
-        <QuickCard icon="map-outline" label={t('facilities.map')} onPress={() => router.push('/(tabs)/facilities')} />
+        <QuickCard icon="map-outline" label={t('ui.facilitiesTitle')} onPress={() => router.push('/(tabs)/facilities')} />
         <QuickCard icon="qr-code-outline" label={t('member.qr')} onPress={() => router.push('/(tabs)/member/qr')} />
         <QuickCard icon="help-circle-outline" label={t('support.faq')} onPress={() => router.push('/(tabs)/support/faq')} />
       </View>
@@ -94,16 +80,12 @@ const styles = StyleSheet.create({
   screen: { paddingTop: spacing.sm },
   absolute: { bottom: 0, left: 0, position: 'absolute', right: 0, top: 0 },
   hero: { borderRadius: radii.lg, height: 430, justifyContent: 'flex-end', overflow: 'hidden', padding: spacing.lg },
-  heroCopy: { gap: spacing.sm },
+  heroCopy: { gap: spacing.sm, maxWidth: 560 },
   eyebrow: { ...typography.caption, color: colors.white, letterSpacing: 3 },
   headline: { ...typography.display, color: colors.white },
   subheadline: { ...typography.body, color: colors.white },
-  hotelList: { gap: spacing.md },
-  statusGrid: { flexDirection: 'row', gap: spacing.sm },
-  statusCell: { backgroundColor: colors.surface, borderColor: colors.border, borderRadius: radii.lg, borderWidth: 1, flex: 1, gap: spacing.xs, minHeight: 150, padding: spacing.md },
-  statusTitle: { ...typography.label, color: colors.text },
   quickGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
-  quickCard: { alignItems: 'center', backgroundColor: colors.surface, borderColor: colors.border, borderRadius: radii.lg, borderWidth: 1, gap: spacing.xs, justifyContent: 'center', minHeight: 108, padding: spacing.sm, width: '48%' },
+  quickCard: { alignItems: 'center', backgroundColor: colors.surface, borderColor: colors.border, borderRadius: radii.lg, borderWidth: 1, flexBasis: 150, flexGrow: 1, gap: spacing.xs, justifyContent: 'center', minHeight: 108, padding: spacing.sm },
   quickLabel: { ...typography.label, color: colors.text, textAlign: 'center' },
   pressed: { opacity: 0.75 },
   pointsCard: { alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between' },

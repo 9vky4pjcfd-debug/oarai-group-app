@@ -9,7 +9,7 @@ import { PageHeader } from '@/components/PageHeader';
 import { Badge, Button, Card, Screen, SectionHeader } from '@/components/design-system';
 import { colors, DEFAULT_HOTEL_ID, spacing, typography } from '@/constants';
 import { useHotels } from '@/features/content';
-import { HotelPicker } from '@/features/rooms/RoomsScreen';
+import { HotelPicker } from '@/features/hotels/HotelPicker';
 import { addDays, daysBetween } from '@/services/booking/booking-rules';
 import { services } from '@/services';
 import { parseStayParams, toStayParams, useBookingFormat, type StayParams } from './booking';

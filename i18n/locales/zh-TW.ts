@@ -1,5 +1,6 @@
 export const zhTW = {
   common: { back: '返回', viewDetails: '查看詳情', comingSoon: '準備中', retry: '重試', settings: '設定' },
+  ui: { allRooms: '查看所有客房', callHotel: '撥打電話', contactIntro: '訂房與各項詢問，請直接聯絡各館。', noFacilities: '本館設施資訊請參閱官方網站。', facilitiesTitle: '館內設施' },
   tabs: { home: '首頁', stay: '住宿', facilities: '館內', member: '會員', support: '支援' },
   home: { welcome: 'OARAI GROUP', headline: 'Timeless, in the Blue.', subheadline: '樂趣接連不斷，令人心動的全包式住宿體驗', reserve: '搜尋空房', liveTitle: '目前館內狀況', bathQuiet: '展望大浴場：舒適', restaurantWait: '日の出：候位3組', explore: '讓住宿更加舒適', points: '目前點數', pointsUnit: '點' },
   news: { eyebrow: 'NEWS', title: '最新消息', subtitle: '集團與各館的最新資訊', all: '全部', group: '集團', groupWide: '集團各館', viewAll: '查看全部消息', empty: '目前沒有消息', important: '重要', sample: '目前顯示示範消息', officialSite: '前往官方網站查看詳情', notFound: '這則消息已下架', categories: { news: '公告', campaign: '活動', facility: '設施・客房', important: '重要' } },

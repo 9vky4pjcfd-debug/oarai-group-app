@@ -39,6 +39,7 @@ export const useAllNotices = () => useContent('notices', (force) => services.hot
 export const useNotice = (noticeId: string) => useContent(`notice:${noticeId}`, async (force) => (await services.hotelContent.getAllNotices(refresh(force))).find((item) => item.noticeId === noticeId) ?? null);
 export const useFacilities = (hotelId: string) => useContent(`facilities:${hotelId}`, (force) => services.hotelContent.getFacilities(hotelId, refresh(force)));
 export const useFacility = (hotelId: string, facilityId: string) => useContent(`facility:${hotelId}:${facilityId}`, (force) => services.hotelContent.getFacility(hotelId, facilityId, refresh(force)));
+export const useFaq = (hotelId: string) => useContent(`faq:${hotelId}`, (force) => services.hotelContent.getFaq(hotelId, refresh(force)));
 
 /** Returns a translator for content-managed (Firestore / mock) text in the current UI language. */
 export function useLocalized() {

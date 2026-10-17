@@ -1,5 +1,6 @@
 export const ja = {
   common: { back: '戻る', viewDetails: '詳しく見る', comingSoon: '準備中', retry: '再試行', settings: '設定' },
+  ui: { allRooms: 'すべての客室を見る', callHotel: '電話する', contactIntro: 'ご予約・ご質問は各館へ直接お問い合わせください。', noFacilities: 'この館の施設情報は公式サイトでご覧いただけます。', facilitiesTitle: '館内施設' },
   tabs: { home: 'ホーム', stay: '宿泊', facilities: '館内', member: '会員', support: 'サポート' },
   home: { welcome: 'OARAI GROUP', headline: 'Timeless, in the Blue.', subheadline: '楽しみ、つぎつぎ。心が躍るインクルーシブステイ', reserve: '空室検索', liveTitle: '現在の館内状況', bathQuiet: '展望大浴場：空いています', restaurantWait: '日の出：3組待ち', explore: 'ご滞在をもっと快適に', points: '現在のポイント', pointsUnit: 'ポイント' },
   news: { eyebrow: 'NEWS', title: 'お知らせ', subtitle: 'グループと各館からの最新情報', all: 'すべて', group: 'グループ', groupWide: 'グループ全館', viewAll: 'お知らせ一覧', empty: 'お知らせはありません', important: '重要', sample: 'サンプルのお知らせを表示しています', officialSite: '公式サイトで詳しく見る', notFound: 'このお知らせは掲載が終了しました', categories: { news: 'お知らせ', campaign: 'キャンペーン', facility: '施設・客室', important: '重要' } },

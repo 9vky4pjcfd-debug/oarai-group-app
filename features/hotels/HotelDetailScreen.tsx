@@ -6,7 +6,8 @@ import { ContentGate } from '@/components/ContentGate';
 import { DetailLayout } from '@/components/DetailLayout';
 import { Badge, Button, Card, Screen, SectionHeader } from '@/components/design-system';
 import { PageHeader } from '@/components/PageHeader';
-import { colors, spacing, typography } from '@/constants';
+import { colors, DEFAULT_HOTEL_ID, spacing, typography } from '@/constants';
+import { MenuRow } from '@/components/MenuRow';
 import { useHotel, useLocalized } from '@/features/content';
 import { resolveContentImage } from '@/features/hotel/content-utils';
 import { HotelRooms } from '@/features/rooms/RoomsScreen';
@@ -39,8 +40,9 @@ export function HotelDetailScreen() {
       ) : null}
       <Button label={t('hotels.reserve')} onPress={() => router.push({ pathname: '/(tabs)/stay/reservation', params: { hotelId: data.hotelId } })} />
       {data.websiteUrl ? <Button label={t('hotels.website')} variant="secondary" onPress={() => WebBrowser.openBrowserAsync(data.websiteUrl!)} /> : null}
+      {data.hotelId === DEFAULT_HOTEL_ID ? <MenuRow icon="pulse-outline" title={t('home.liveTitle')} description={t('facilities.crowdDescription')} href="/(tabs)/facilities/crowd" /> : null}
       <SectionHeader title={t('hotels.rooms')} />
-      <HotelRooms hotelId={data.hotelId} />
+      <HotelRooms hotelId={data.hotelId} limit={4} />
     </DetailLayout>
   );
 }

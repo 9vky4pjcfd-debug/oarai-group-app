@@ -35,10 +35,15 @@ const languageDetector: LanguageDetectorAsyncModule = {
   },
 };
 
+// The static web build pre-renders every page in Japanese. Starting the browser in Japanese too keeps the first
+// render identical to that HTML (avoiding a hydration mismatch); `applyDetectedLanguage` switches after mount.
+const isWeb = Platform.OS === 'web';
+if (!isWeb) i18n.use(languageDetector);
+
 void i18n
-  .use(languageDetector)
   .use(initReactI18next)
   .init({
+    ...(isWeb ? { lng: 'ja' } : {}),
     compatibilityJSON: 'v4',
     fallbackLng: 'ja',
     defaultNS: 'translation',
@@ -49,6 +54,14 @@ void i18n
     },
     interpolation: { escapeValue: false },
   });
+
+/** Web only: applies the stored or browser language once the pre-rendered page has hydrated. */
+export async function applyDetectedLanguage() {
+  if (!isWeb || typeof window === 'undefined') return;
+  const stored = await AsyncStorage.getItem(languageStorageKey);
+  const language = normalizeLanguage(stored ?? getLocales()[0]?.languageTag);
+  if (language !== i18n.language) await i18n.changeLanguage(language);
+}
 
 export async function changeLanguage(language: SupportedLanguage) {
   await i18n.changeLanguage(language);

@@ -1,14 +1,13 @@
 import { useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { AppHeader } from '@/components/AppHeader';
 import { ContentGate } from '@/components/ContentGate';
 import { MenuRow } from '@/components/MenuRow';
-import { EmptyState, Screen, ScreenSection, SectionHeader } from '@/components/design-system';
-import { colors, DEFAULT_HOTEL_ID, radii, spacing, typography } from '@/constants';
-import { useHotels, useLocalized, useRooms } from '@/features/content';
-import type { HotelPublicProfile } from '@/types';
+import { CardGrid, CardGridItem, EmptyState, Screen, SectionHeader } from '@/components/design-system';
+import { DEFAULT_HOTEL_ID } from '@/constants';
+import { useHotels, useRooms } from '@/features/content';
+import { HotelPicker } from '@/features/hotels/HotelPicker';
 import { RoomCard } from './RoomCard';
 
 export function RoomsScreen() {
@@ -33,38 +32,20 @@ export function RoomsScreen() {
   );
 }
 
-export function HotelRooms({ hotelId }: { hotelId: string }) {
+/** Room cards for one hotel; with `limit`, shows only the first few and links to the full list. */
+export function HotelRooms({ hotelId, limit }: { hotelId: string; limit?: number }) {
   const { t } = useTranslation();
   const rooms = useRooms(hotelId);
   return (
     <ContentGate state={rooms} onRetry={rooms.reload}>
       {(list) => list.length === 0
         ? <EmptyState title={t('hotels.noRooms')} />
-        : <ScreenSection>{list.map((room) => <RoomCard key={`${room.hotelId}:${room.roomId}`} room={room} />)}</ScreenSection>}
+        : (
+          <>
+            <CardGrid>{list.slice(0, limit).map((room) => <CardGridItem key={`${room.hotelId}:${room.roomId}`}><RoomCard room={room} /></CardGridItem>)}</CardGrid>
+            {limit != null && list.length > limit ? <MenuRow icon="bed-outline" title={t('ui.allRooms')} href={{ pathname: '/(tabs)/stay', params: { hotelId } }} /> : null}
+          </>
+        )}
     </ContentGate>
   );
 }
-
-export function HotelPicker({ hotels, selected, onSelect }: { hotels: HotelPublicProfile[]; selected: string; onSelect: (hotelId: string) => void }) {
-  const l = useLocalized();
-  return (
-    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.picker}>
-      {hotels.map((hotel) => {
-        const active = hotel.hotelId === selected;
-        return (
-          <Pressable key={hotel.hotelId} accessibilityRole="button" accessibilityState={{ selected: active }} onPress={() => onSelect(hotel.hotelId)} style={[styles.chip, active && styles.chipActive]}>
-            <Text style={[styles.chipLabel, active && styles.chipLabelActive]}>{l(hotel.name)}</Text>
-          </Pressable>
-        );
-      })}
-    </ScrollView>
-  );
-}
-
-const styles = StyleSheet.create({
-  picker: { gap: spacing.xs },
-  chip: { backgroundColor: colors.surface, borderColor: colors.border, borderRadius: radii.pill, borderWidth: 1, paddingHorizontal: spacing.md, paddingVertical: spacing.xs },
-  chipActive: { backgroundColor: colors.brand, borderColor: colors.brand },
-  chipLabel: { ...typography.label, color: colors.text },
-  chipLabelActive: { color: colors.white },
-});

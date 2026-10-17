@@ -12,9 +12,9 @@ export function RoomCard({ room }: { room: Room }) {
   return (
     <ContentCard
       image={image ? resolveContentImage(image) : undefined}
-      meta={`${l(room.roomSize)} · ${formatCapacity(room, t)}`}
+      meta={l(room.category)}
       title={l(room.name)}
-      description={l(room.shortDescription)}
+      description={[l(room.roomSize), formatCapacity(room, t), ...room.features.map(l)].filter(Boolean).join('・')}
       href={{ pathname: '/(tabs)/stay/room/[id]', params: { id: room.roomId, hotelId: room.hotelId } }}
     />
   );
