@@ -8,7 +8,9 @@ import { AppHeader } from '@/components/AppHeader';
 import { Badge, Button, Card, Screen, SectionHeader } from '@/components/design-system';
 import { ContentGate } from '@/components/ContentGate';
 import { colors, radii, spacing, typography } from '@/constants';
-import { useHotels } from '@/features/content';
+import { useHotels, useLocalized } from '@/features/content';
+import { useMemberFormat } from '@/features/member/member-format';
+import { useMemberIdentity, useMembership } from '@/features/member/membership';
 import { HotelCard } from '@/features/hotels/HotelCard';
 
 export function HomeScreen() {
@@ -56,11 +58,28 @@ export function HomeScreen() {
         <QuickCard icon="help-circle-outline" label={t('support.faq')} onPress={() => router.push('/(tabs)/support/faq')} />
       </View>
 
+      <HomePointsCard />
+    </Screen>
+  );
+}
+
+function HomePointsCard() {
+  const { t } = useTranslation();
+  const localize = useLocalized();
+  const format = useMemberFormat();
+  const identity = useMemberIdentity();
+  const membership = useMembership(identity.userId);
+  const summary = membership.status === 'ready' ? membership.data : null;
+  return (
+    <Pressable onPress={() => router.push('/(tabs)/member')}>
       <Card style={styles.pointsCard}>
-        <View><Text style={styles.pointsLabel}>{t('home.points')}</Text><Text style={styles.points}>0 <Text style={styles.pointsUnit}>{t('home.pointsUnit')}</Text></Text></View>
+        <View>
+          <Text style={styles.pointsLabel}>{summary ? `${t('home.points')} · ${localize(summary.progress.current.name)}` : t('home.points')}</Text>
+          <Text style={styles.points}>{summary ? format.points(summary.account.balance) : '—'} <Text style={styles.pointsUnit}>{t('home.pointsUnit')}</Text></Text>
+        </View>
         <Ionicons color={colors.accent} name="sparkles-outline" size={34} />
       </Card>
-    </Screen>
+    </Pressable>
   );
 }
 

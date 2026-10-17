@@ -1,7 +1,9 @@
-import type { MemberProfileDocument } from '@/types';
+import type { MembershipTier, MemberProfileDocument } from '@/types';
 
+/** Membership is shared across the group, so profiles are keyed by user only. */
 export interface MemberRepository {
-  getProfile(userId: string, hotelId: string): Promise<MemberProfileDocument | null>;
+  getProfile(userId: string): Promise<MemberProfileDocument | null>;
+  getTiers(): Promise<MembershipTier[]>;
 }
 
 export interface MemberVerificationGateway {

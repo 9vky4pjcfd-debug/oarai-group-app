@@ -1,17 +1,22 @@
-import { collection, getDocs, limit as limitQuery, query, where } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, limit as limitQuery, orderBy, query, where } from 'firebase/firestore';
 import type { PointRepository } from '@/repositories';
 import { getFirestoreClient } from '@/services/firebase';
 import { mapToAppError } from '@/services/errors';
 import type { CouponDocument, PointAccountDocument, PointTransactionDocument } from '@/types';
-import { mapFirestoreDates } from './firestore-mappers';
+import { mapFirestoreDates, toISODateString } from './firestore-mappers';
 
 export class FirebasePointRepository implements PointRepository {
-  async getAccount(userId: string, hotelId: string) {
-    try { const snapshot = await getDocs(query(collection(getFirestoreClient(), 'pointAccounts'), where('userId', '==', userId), where('hotelId', '==', hotelId), limitQuery(1))); return snapshot.empty ? null : mapFirestoreDates<PointAccountDocument>(snapshot.docs[0]!.data(), ['createdAt', 'updatedAt']); }
-    catch (error) { throw mapToAppError(error); }
+  async getAccount(userId: string) {
+    try {
+      const snapshot = await getDoc(doc(getFirestoreClient(), 'pointAccounts', userId));
+      if (!snapshot.exists()) return null;
+      const data = snapshot.data();
+      const account = mapFirestoreDates<PointAccountDocument>(data, ['createdAt', 'updatedAt', 'tierEvaluatedAt']);
+      return data.nextExpiry ? { ...account, nextExpiry: { amount: Number(data.nextExpiry.amount), expiresAt: toISODateString(data.nextExpiry.expiresAt) } } : account;
+    } catch (error) { throw mapToAppError(error); }
   }
-  async getTransactions(userId: string, hotelId: string, resultLimit: number) {
-    try { const snapshot = await getDocs(query(collection(getFirestoreClient(), 'pointTransactions'), where('userId', '==', userId), where('hotelId', '==', hotelId), limitQuery(Math.min(Math.max(resultLimit, 1), 100)))); return snapshot.docs.map((item) => mapFirestoreDates<PointTransactionDocument>(item.data(), ['createdAt'])); }
+  async getTransactions(userId: string, resultLimit: number) {
+    try { const snapshot = await getDocs(query(collection(getFirestoreClient(), 'pointTransactions'), where('userId', '==', userId), orderBy('createdAt', 'desc'), limitQuery(Math.min(Math.max(resultLimit, 1), 100)))); return snapshot.docs.map((item) => mapFirestoreDates<PointTransactionDocument>(item.data(), ['createdAt'])); }
     catch (error) { throw mapToAppError(error); }
   }
   async getAvailableCoupons(hotelId: string) {

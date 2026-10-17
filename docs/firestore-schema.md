@@ -9,12 +9,13 @@ All business collections include `hotelId` unless the document is globally scope
 | `facilities` | generated or stable facility ID | Published facility content; public read |
 | `faq` | stable FAQ ID | Published FAQ; public read |
 | `users` | Firebase Auth UID | Account projection; owner read |
-| `memberProfiles` | scoped/composite ID | Hotel membership profile; owner read |
+| `memberProfiles` | Firebase Auth UID | Group-wide membership profile (one per user, shared by every hotel); owner read |
+| `membershipTiers` | tier ID (`blue`, `silver`, …) | Tier thresholds, earn rate and benefits; public read when `published` |
 | `reservations` | reservation ID | Owner read; server writes |
 | `restaurantPublicStatus` | `hotelId__restaurantId` | Aggregated public summary only |
 | `restaurantQueue` | queue entry ID | Server-only internal queue |
 | `bathPublicStatus` | `hotelId__bathId` | Aggregated public summary only |
-| `pointAccounts` | scoped/composite ID | Per-hotel balance; owner read, server writes |
+| `pointAccounts` | Firebase Auth UID | Group-wide balance, qualifying points and tier; owner read, server writes |
 | `pointTransactions` | transaction ID | Immutable audit ledger; owner read, server writes |
 | `coupons` | coupon ID | Active coupon definition; public read |
 | `couponRedemptions` | redemption ID | Owner read, server transaction writes |
@@ -26,7 +27,15 @@ All business collections include `hotelId` unless the document is globally scope
 
 Reservations retain `reservationId`, `userId`, `hotelId`, `externalReservationId`, `status`, `checkIn`, `checkOut`, `guestCount`, `createdAt` and `updatedAt`. Card numbers, CVV and complete payment data must never be stored.
 
-Point transactions retain `transactionId`, `userId`, `hotelId`, `type`, `amount`, `balanceBefore`, `balanceAfter`, `source`, `referenceId` and `createdAt`. Balance and ledger changes must occur in one server transaction and produce an audit log.
+Point transactions retain `transactionId`, `userId`, `hotelId` (the property where points were earned or used; `null` for group-wide adjustments), `type`, `amount`, `balanceBefore`, `balanceAfter`, `source`, `referenceId`, `description` and `createdAt`. Balance and ledger changes must occur in one server transaction and produce an audit log.
+
+## Group membership and points
+
+Points and tiers are shared by every property: a member has one `memberProfiles/{uid}` and one `pointAccounts/{uid}`, and points earned at any hotel can be used at any other. Rules live in `features/member/membership-rules.ts` so the server can apply the same logic:
+
+- Earn: 1 base point per ¥100 spent (`YEN_PER_BASE_POINT`), multiplied by the member's tier `earnRate` for the balance.
+- Tier: decided by `qualifyingPoints`, the base points (before the tier bonus) earned in the rolling 12 months, against each tier's `qualifyingPoints` threshold. The server re-evaluates it after every earn and stores `tierId` / `tierEvaluatedAt`.
+- The thresholds, rates and benefits are data in `membershipTiers`; the demo values in `repositories/mock/mock-membership.ts` are provisional until the group confirms them.
 
 `restaurantPublicStatus` exposes only `restaurantId`, `restaurantName`, `status`, `waitingGroups`, `estimatedWaitMinutes` and `updatedAt`. Guest name, room, phone, table assignment, staff notes and the full queue remain server-only.
 

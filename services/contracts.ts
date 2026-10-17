@@ -1,6 +1,6 @@
 import type {
   AuthSession, AuthState, BathPublicStatusDocument, CouponDocument, FederatedCredential,
-  Facility, FaqItem, FloorGuide, HomeContent, HotelPublicProfile, MemberProfileDocument, Notice, NotificationPreferences,
+  Facility, FaqItem, FloorGuide, HomeContent, HotelPublicProfile, MembershipTier, MemberProfileDocument, Notice, NotificationPreferences,
   PointAccountDocument, PointTransactionDocument,
   ReservationDocument, RestaurantPublicStatusDocument, Room,
 } from '@/types';
@@ -37,10 +37,14 @@ export interface CrowdStatusService {
 }
 
 export interface ReservationService { getOwnReservations(userId: string, hotelId: string): Promise<ReservationDocument[]>; }
-export interface MemberService { getProfile(userId: string, hotelId: string): Promise<MemberProfileDocument | null>; }
+/** Membership and points are shared by every group hotel, so these are keyed by user only. */
+export interface MemberService {
+  getProfile(userId: string): Promise<MemberProfileDocument | null>;
+  getTiers(): Promise<MembershipTier[]>;
+}
 export interface PointService {
-  getAccount(userId: string, hotelId: string): Promise<PointAccountDocument | null>;
-  getTransactions(userId: string, hotelId: string, limit: number): Promise<PointTransactionDocument[]>;
+  getAccount(userId: string): Promise<PointAccountDocument | null>;
+  getTransactions(userId: string, limit: number): Promise<PointTransactionDocument[]>;
   getAvailableCoupons(hotelId: string): Promise<CouponDocument[]>;
 }
 export interface NotificationService {

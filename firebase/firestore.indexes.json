@@ -5,10 +5,8 @@
     { "collectionGroup": "facilities", "queryScope": "COLLECTION", "fields": [{ "fieldPath": "hotelId", "order": "ASCENDING" }, { "fieldPath": "published", "order": "ASCENDING" }] },
     { "collectionGroup": "floorGuides", "queryScope": "COLLECTION", "fields": [{ "fieldPath": "hotelId", "order": "ASCENDING" }, { "fieldPath": "published", "order": "ASCENDING" }] },
     { "collectionGroup": "faq", "queryScope": "COLLECTION", "fields": [{ "fieldPath": "hotelId", "order": "ASCENDING" }, { "fieldPath": "published", "order": "ASCENDING" }] },
-    { "collectionGroup": "memberProfiles", "queryScope": "COLLECTION", "fields": [{ "fieldPath": "userId", "order": "ASCENDING" }, { "fieldPath": "hotelId", "order": "ASCENDING" }] },
     { "collectionGroup": "reservations", "queryScope": "COLLECTION", "fields": [{ "fieldPath": "userId", "order": "ASCENDING" }, { "fieldPath": "hotelId", "order": "ASCENDING" }] },
-    { "collectionGroup": "pointAccounts", "queryScope": "COLLECTION", "fields": [{ "fieldPath": "userId", "order": "ASCENDING" }, { "fieldPath": "hotelId", "order": "ASCENDING" }] },
-    { "collectionGroup": "pointTransactions", "queryScope": "COLLECTION", "fields": [{ "fieldPath": "userId", "order": "ASCENDING" }, { "fieldPath": "hotelId", "order": "ASCENDING" }] },
+    { "collectionGroup": "pointTransactions", "queryScope": "COLLECTION", "fields": [{ "fieldPath": "userId", "order": "ASCENDING" }, { "fieldPath": "createdAt", "order": "DESCENDING" }] },
     { "collectionGroup": "coupons", "queryScope": "COLLECTION", "fields": [{ "fieldPath": "hotelId", "order": "ASCENDING" }, { "fieldPath": "active", "order": "ASCENDING" }] }
   ],
   "fieldOverrides": []

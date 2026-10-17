@@ -23,10 +23,10 @@ export const services: ServiceRegistry = {
   auth: new AuthServiceImpl(authRepository),
   hotelContent: new HotelContentServiceImpl(hotelRepository),
   crowdStatus: new CrowdStatusServiceImpl(crowdRepository),
-  member: { getProfile: (userId, hotelId) => memberRepository.getProfile(userId, hotelId) },
+  member: { getProfile: (userId) => memberRepository.getProfile(userId), getTiers: () => memberRepository.getTiers() },
   points: {
-    getAccount: (userId, hotelId) => pointRepository.getAccount(userId, hotelId),
-    getTransactions: (userId, hotelId, limit) => pointRepository.getTransactions(userId, hotelId, limit),
+    getAccount: (userId) => pointRepository.getAccount(userId),
+    getTransactions: (userId, limit) => pointRepository.getTransactions(userId, limit),
     getAvailableCoupons: (hotelId) => pointRepository.getAvailableCoupons(hotelId),
   },
   reservations: { getOwnReservations: (userId, hotelId) => reservationRepository.getOwnReservations(userId, hotelId) },

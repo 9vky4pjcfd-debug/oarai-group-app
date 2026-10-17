@@ -10,7 +10,7 @@ export type ContentState<T> =
   | { status: 'error'; data: null };
 
 /** Loads published hotel content through the service layer. `key` must change whenever the loader's inputs change. */
-function useContent<T>(key: string, loader: (forceRefresh: boolean) => Promise<T>) {
+export function useContent<T>(key: string, loader: (forceRefresh: boolean) => Promise<T>) {
   const [attempt, setAttempt] = useState(0);
   const requestKey = `${key}#${attempt}`;
   const [result, setResult] = useState<{ requestKey: string; state: ContentState<T> } | null>(null);

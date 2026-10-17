@@ -57,16 +57,21 @@ service cloud.firestore {
       allow read: if owns(userId);
       allow write: if false;
     }
-    match /memberProfiles/{profileId} {
-      allow read: if signedIn() && resource.data.userId == request.auth.uid;
+    // Membership is group-wide: one profile and one point account per user, document ID = userId.
+    match /memberProfiles/{userId} {
+      allow read: if owns(userId);
+      allow write: if false;
+    }
+    match /membershipTiers/{tierId} {
+      allow read: if resource.data.published == true;
       allow write: if false;
     }
     match /reservations/{reservationId} {
       allow read: if signedIn() && resource.data.userId == request.auth.uid;
       allow write: if false;
     }
-    match /pointAccounts/{accountId} {
-      allow read: if signedIn() && resource.data.userId == request.auth.uid;
+    match /pointAccounts/{userId} {
+      allow read: if owns(userId);
       allow write: if false;
     }
     match /pointTransactions/{transactionId} {
