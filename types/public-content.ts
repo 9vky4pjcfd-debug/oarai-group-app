@@ -11,13 +11,20 @@ export interface HotelLink {
   url: string;
 }
 
+export type NoticeCategory = 'news' | 'campaign' | 'facility' | 'important';
+
+/** An announcement. `hotelId` null means it applies to the whole group. */
 export interface Notice {
   noticeId: string;
-  hotelId: string;
+  hotelId: string | null;
+  category: NoticeCategory;
   title: LocalizedText;
   body: LocalizedText;
   priority: 'normal' | 'important';
   publishedAt: string;
+  /** Hidden from the app after this time when set. */
+  expiresAt?: string;
+  linkUrl?: string;
   sortOrder: number;
 }
 

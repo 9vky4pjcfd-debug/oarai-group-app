@@ -5,6 +5,8 @@ export interface HotelRepository {
   getHomeContent(hotelId: string): Promise<HomeContent | null>;
   getHotelContent(hotelId: string): Promise<HotelPublicProfile | null>;
   getNotices(hotelId: string): Promise<Notice[]>;
+  /** Every published notice, group-wide and per hotel. */
+  getAllNotices(): Promise<Notice[]>;
   getNotice(hotelId: string, noticeId: string): Promise<Notice | null>;
   getRooms(hotelId: string): Promise<Room[]>;
   getRoom(hotelId: string, roomId: string): Promise<Room | null>;

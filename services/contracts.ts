@@ -21,6 +21,8 @@ export interface HotelContentService {
   getHomeContent(hotelId: string, options?: ContentReadOptions): Promise<HomeContent | null>;
   getHotelContent(hotelId: string, options?: ContentReadOptions): Promise<HotelPublicProfile | null>;
   getNotices(hotelId: string, options?: ContentReadOptions): Promise<Notice[]>;
+  /** Group-wide and per-hotel notices that are currently visible, newest first. */
+  getAllNotices(options?: ContentReadOptions): Promise<Notice[]>;
   getNotice(hotelId: string, noticeId: string, options?: ContentReadOptions): Promise<Notice | null>;
   getRooms(hotelId: string, options?: ContentReadOptions): Promise<Room[]>;
   getRoom(hotelId: string, roomId: string, options?: ContentReadOptions): Promise<Room | null>;

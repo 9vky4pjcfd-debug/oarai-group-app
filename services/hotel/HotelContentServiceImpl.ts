@@ -1,4 +1,5 @@
 import type { HotelRepository } from '@/repositories';
+import { visibleNotices } from './notice-utils';
 import type { ContentReadOptions, HotelContentService } from '@/services/contracts';
 
 interface CacheEntry { expiresAt: number; value: unknown; }
@@ -46,6 +47,7 @@ export class HotelContentServiceImpl implements HotelContentService {
   getHomeContent(hotelId: string, options?: ContentReadOptions) { return this.read(`${hotelId}:home`, () => this.repository.getHomeContent(hotelId), options); }
   getHotelContent(hotelId: string, options?: ContentReadOptions) { return this.read(`${hotelId}:hotel`, () => this.repository.getHotelContent(hotelId), options); }
   getNotices(hotelId: string, options?: ContentReadOptions) { return this.read(`${hotelId}:notices`, () => this.repository.getNotices(hotelId), options); }
+  getAllNotices(options?: ContentReadOptions) { return this.read('group:notices', async () => visibleNotices(await this.repository.getAllNotices(), this.now()), options); }
   getNotice(hotelId: string, noticeId: string, options?: ContentReadOptions) { return this.read(`${hotelId}:notice:${noticeId}`, () => this.repository.getNotice(hotelId, noticeId), options); }
   getRooms(hotelId: string, options?: ContentReadOptions) { return this.read(`${hotelId}:rooms`, () => this.repository.getRooms(hotelId), options); }
   getRoom(hotelId: string, roomId: string, options?: ContentReadOptions) { return this.read(`${hotelId}:room:${roomId}`, () => this.repository.getRoom(hotelId, roomId), options); }

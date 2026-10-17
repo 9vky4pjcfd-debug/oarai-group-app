@@ -30,6 +30,12 @@ export class FirebaseHotelRepository implements HotelRepository {
     catch (error) { throw mapToAppError(error); }
   }
   getNotices(hotelId: string) { return publishedByHotel<Notice>('notices', hotelId); }
+  async getAllNotices() {
+    try {
+      const snapshot = await getDocs(query(collection(getFirestoreClient(), 'notices'), where('published', '==', true)));
+      return snapshot.docs.map((item) => mapFirestoreDates<Notice>(item.data(), ['publishedAt']));
+    } catch (error) { throw mapToAppError(error); }
+  }
   async getNotice(hotelId: string, noticeId: string) { return (await this.getNotices(hotelId)).find((item) => item.noticeId === noticeId) ?? null; }
   getRooms(hotelId: string) { return publishedByHotel<Room>('rooms', hotelId); }
   async getRoom(hotelId: string, roomId: string) { return (await this.getRooms(hotelId)).find((item) => item.roomId === roomId) ?? null; }

@@ -8,6 +8,7 @@ All business collections include `hotelId` unless the document is globally scope
 | `rooms` | generated or stable room ID | Published room content; public read |
 | `facilities` | generated or stable facility ID | Published facility content; public read |
 | `faq` | stable FAQ ID | Published FAQ; public read |
+| `notices` | stable notice ID | Announcements; `hotelId` is a property ID or `null` for group-wide news. Fields: `category` (`news`/`campaign`/`facility`/`important`), `priority`, `title`, `body`, `publishedAt`, optional `expiresAt` and `linkUrl`, `published`. The app hides notices before `publishedAt` and after `expiresAt`; public read |
 | `users` | Firebase Auth UID | Account projection; owner read |
 | `memberProfiles` | Firebase Auth UID | Group-wide membership profile (one per user, shared by every hotel); owner read |
 | `membershipTiers` | tier ID (`blue`, `silver`, …) | Tier thresholds, earn rate and benefits; public read when `published` |

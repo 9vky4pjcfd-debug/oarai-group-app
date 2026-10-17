@@ -1,9 +1,10 @@
 import type { HotelRepository } from '@/repositories';
 import type { Facility, FaqItem, FloorGuide, HomeContent, HotelPublicProfile, Notice, Room } from '@/types';
 import { mockGroupRooms, mockHotels } from './mock-group-hotels';
-import { mockFacilities, mockFaq, mockFloorGuides, mockNotices } from './mock-hotel-content';
+import { mockFacilities, mockFaq, mockFloorGuides } from './mock-hotel-content';
+import { mockNotices } from './mock-notices';
 
-function byHotel<T extends { hotelId: string; sortOrder: number }>(items: T[], hotelId: string): T[] {
+function byHotel<T extends { hotelId: string | null; sortOrder: number }>(items: T[], hotelId: string): T[] {
   return items.filter((item) => item.hotelId === hotelId).sort((a, b) => a.sortOrder - b.sortOrder);
 }
 
@@ -28,6 +29,7 @@ export class MockHotelRepository implements HotelRepository {
   }
 
   async getNotices(hotelId: string): Promise<Notice[]> { return byHotel(mockNotices, hotelId); }
+  async getAllNotices(): Promise<Notice[]> { return [...mockNotices]; }
   async getNotice(hotelId: string, noticeId: string): Promise<Notice | null> { return (await this.getNotices(hotelId)).find((item) => item.noticeId === noticeId) ?? null; }
   async getRooms(hotelId: string): Promise<Room[]> { return byHotel(this.rooms, hotelId); }
   async getRoom(hotelId: string, roomId: string): Promise<Room | null> { return (await this.getRooms(hotelId)).find((item) => item.roomId === roomId) ?? null; }

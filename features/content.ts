@@ -35,6 +35,8 @@ export const useHotels = () => useContent('hotels', (force) => services.hotelCon
 export const useHotel = (hotelId: string) => useContent(`hotel:${hotelId}`, (force) => services.hotelContent.getHotelContent(hotelId, refresh(force)));
 export const useRooms = (hotelId: string) => useContent(`rooms:${hotelId}`, (force) => services.hotelContent.getRooms(hotelId, refresh(force)));
 export const useRoom = (hotelId: string, roomId: string) => useContent(`room:${hotelId}:${roomId}`, (force) => services.hotelContent.getRoom(hotelId, roomId, refresh(force)));
+export const useAllNotices = () => useContent('notices', (force) => services.hotelContent.getAllNotices(refresh(force)));
+export const useNotice = (noticeId: string) => useContent(`notice:${noticeId}`, async (force) => (await services.hotelContent.getAllNotices(refresh(force))).find((item) => item.noticeId === noticeId) ?? null);
 export const useFacilities = (hotelId: string) => useContent(`facilities:${hotelId}`, (force) => services.hotelContent.getFacilities(hotelId, refresh(force)));
 export const useFacility = (hotelId: string, facilityId: string) => useContent(`facility:${hotelId}:${facilityId}`, (force) => services.hotelContent.getFacility(hotelId, facilityId, refresh(force)));
 

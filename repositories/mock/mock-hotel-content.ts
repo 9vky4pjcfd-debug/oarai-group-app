@@ -5,7 +5,6 @@ import type {
   FloorGuide,
   HotelPublicProfile,
   LocalizedText,
-  Notice,
   Room,
 } from '@/types';
 
@@ -104,8 +103,6 @@ export const mockHotelProfile: HotelPublicProfile = {
   websiteUrl: 'https://www.oarai-hotel.co.jp/',
   sortOrder: 1,
 };
-
-export const mockNotices: Notice[] = [];
 
 export const mockRooms: Room[] = [
   room(
