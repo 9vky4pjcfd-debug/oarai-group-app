@@ -12,7 +12,9 @@ All business collections include `hotelId` unless the document is globally scope
 | `users` | Firebase Auth UID | Account projection; owner read |
 | `memberProfiles` | Firebase Auth UID | Group-wide membership profile (one per user, shared by every hotel); owner read |
 | `membershipTiers` | tier ID (`blue`, `silver`, …) | Tier thresholds, earn rate and benefits; public read when `published` |
-| `reservations` | reservation ID | Owner read; server writes |
+| `reservations` | reservation ID | One booked room, group-wide per user (`userId`, `hotelId`, `roomId`, dates, party, total, contact). Owner read; written only by booking Cloud Functions. See [booking.md](booking.md) |
+| `bookingInventory` | `hotelId__roomId__date` | App allotment and adult rate per room type per night; server-only. See [booking.md](booking.md) |
+| `hotelBookingContacts` | `hotelId` | Where booking notices are emailed; server-only |
 | `restaurantPublicStatus` | `hotelId__restaurantId` | Aggregated public summary only |
 | `restaurantQueue` | queue entry ID | Server-only internal queue |
 | `bathPublicStatus` | `hotelId__bathId` | Aggregated public summary only |
@@ -26,7 +28,7 @@ All business collections include `hotelId` unless the document is globally scope
 
 ## Security-critical fields
 
-Reservations retain `reservationId`, `userId`, `hotelId`, `externalReservationId`, `status`, `checkIn`, `checkOut`, `guestCount`, `createdAt` and `updatedAt`. Card numbers, CVV and complete payment data must never be stored.
+Reservations retain `reservationId`, `userId`, `hotelId`, `roomId`, `confirmationCode`, `externalReservationId`, `status`, `checkIn` / `checkOut` (hotel-local `YYYY-MM-DD`), `rooms`, `adults`, `children`, `infants`, `guestCount`, `totalAmount`, `currency`, `paymentMethod`, `contact` (lead guest name, phone, email), `notes`, `cancelledAt`, `createdAt` and `updatedAt`. Card numbers, CVV and complete payment data must never be stored.
 
 Point transactions retain `transactionId`, `userId`, `hotelId` (the property where points were earned or used; `null` for group-wide adjustments), `type`, `amount`, `balanceBefore`, `balanceAfter`, `source`, `referenceId`, `description` and `createdAt`. Balance and ledger changes must occur in one server transaction and produce an audit log.
 

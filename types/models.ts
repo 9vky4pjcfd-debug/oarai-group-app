@@ -10,13 +10,6 @@ export interface CrowdStatus {
   isDemo: boolean;
 }
 
-export interface ReservationSearch {
-  checkIn: string;
-  checkOut: string;
-  adults: number;
-  children: number;
-}
-
 export interface MemberProfile {
   id: EntityId;
   userId: EntityId;

@@ -43,6 +43,7 @@ npx expo export --platform all
 ## Documentation
 
 - [Backend architecture](docs/backend-architecture.md)
+- [Room booking](docs/booking.md)
 - [Firestore schema](docs/firestore-schema.md)
 - [Firestore security](docs/firestore-security.md)
 - [Backend security](docs/backend-security.md)

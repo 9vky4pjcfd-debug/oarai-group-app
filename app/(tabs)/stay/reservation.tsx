@@ -1,1 +1,1 @@
-export { ReservationScreen as default } from '@/features/rooms/ReservationScreen';
+export { BookingSearchScreen as default } from '@/features/booking/BookingSearchScreen';

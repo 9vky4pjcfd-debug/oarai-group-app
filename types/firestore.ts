@@ -1,4 +1,5 @@
 import type { MemberRole } from './auth';
+import type { DateOnly, GuestContact, PaymentMethod } from './booking';
 import type { MembershipTier } from './membership';
 import type { LocalizedText } from './public-content';
 
@@ -15,7 +16,30 @@ export interface UserDocument extends AuditedDocument { userId: string; email: s
 export interface MemberProfileDocument extends AuditedDocument { userId: string; membershipNumber: string; displayName: string; preferredLanguage: 'ja' | 'zh-TW' | 'en'; homeHotelId: string | null; }
 
 export type ReservationStatus = 'pending' | 'confirmed' | 'cancelled' | 'completed';
-export interface ReservationDocument extends HotelScopedDocument, AuditedDocument { reservationId: string; userId: string; externalReservationId: string | null; status: ReservationStatus; checkIn: ISODateString; checkOut: ISODateString; guestCount: number; }
+/** One booked room. `checkIn` / `checkOut` are hotel-local dates (YYYY-MM-DD). Written only by the server. Never holds card data. */
+export interface ReservationDocument extends HotelScopedDocument, AuditedDocument {
+  reservationId: string;
+  userId: string;
+  roomId: string;
+  /** Short code the guest gives at the front desk. */
+  confirmationCode: string;
+  externalReservationId: string | null;
+  status: ReservationStatus;
+  checkIn: DateOnly;
+  checkOut: DateOnly;
+  /** Rooms of `roomId` in this booking. */
+  rooms: number;
+  adults: number;
+  children: number;
+  infants: number;
+  guestCount: number;
+  totalAmount: number;
+  currency: 'JPY';
+  paymentMethod: PaymentMethod;
+  contact: GuestContact;
+  notes: string;
+  cancelledAt: ISODateString | null;
+}
 
 export type RestaurantOperationalStatus = 'open' | 'busy' | 'paused' | 'closed';
 export interface RestaurantPublicStatusDocument extends HotelScopedDocument { restaurantId: string; restaurantName: string; status: RestaurantOperationalStatus; waitingGroups: number; estimatedWaitMinutes: number | null; updatedAt: ISODateString; isPublic: boolean; }

@@ -27,6 +27,7 @@ export function RoomsScreen() {
       </ContentGate>
       <MenuRow icon="business-outline" title={t('hotels.viewHotel')} href={{ pathname: '/(tabs)/stay/hotel/[hotelId]', params: { hotelId } }} />
       <MenuRow icon="calendar-outline" title={t('rooms.reservation')} description={t('rooms.reservationDescription')} href={{ pathname: '/(tabs)/stay/reservation', params: { hotelId } }} />
+      <MenuRow icon="receipt-outline" title={t('booking.myReservations')} description={t('booking.myReservationsDescription')} href="/(tabs)/stay/booking/reservations" />
       <HotelRooms hotelId={hotelId} />
     </Screen>
   );
@@ -44,7 +45,7 @@ export function HotelRooms({ hotelId }: { hotelId: string }) {
   );
 }
 
-function HotelPicker({ hotels, selected, onSelect }: { hotels: HotelPublicProfile[]; selected: string; onSelect: (hotelId: string) => void }) {
+export function HotelPicker({ hotels, selected, onSelect }: { hotels: HotelPublicProfile[]; selected: string; onSelect: (hotelId: string) => void }) {
   const l = useLocalized();
   return (
     <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.picker}>

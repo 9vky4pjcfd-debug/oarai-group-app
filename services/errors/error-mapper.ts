@@ -10,6 +10,14 @@ const firebaseCodeMap: Record<string, ConstructorParameters<typeof AppError>[0]>
   'not-found': 'NOT_FOUND',
   'resource-exhausted': 'RATE_LIMITED',
   'unavailable': 'NETWORK_ERROR',
+  'functions/unauthenticated': 'AUTH_REQUIRED',
+  'functions/permission-denied': 'PERMISSION_DENIED',
+  'functions/not-found': 'NOT_FOUND',
+  'functions/invalid-argument': 'VALIDATION_ERROR',
+  'functions/failed-precondition': 'VALIDATION_ERROR',
+  'functions/resource-exhausted': 'RATE_LIMITED',
+  'functions/unavailable': 'NETWORK_ERROR',
+  'functions/internal': 'SERVER_ERROR',
 };
 
 function readExternalCode(error: unknown): string | undefined {

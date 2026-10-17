@@ -1,8 +1,8 @@
 import type {
-  AuthSession, AuthState, BathPublicStatusDocument, CouponDocument, FederatedCredential,
+  AuthSession, AuthState, BathPublicStatusDocument, BookingPolicy, BookingRequest, DateOnly, CouponDocument, FederatedCredential,
   Facility, FaqItem, FloorGuide, HomeContent, HotelPublicProfile, MembershipTier, MemberProfileDocument, Notice, NotificationPreferences,
   PointAccountDocument, PointTransactionDocument,
-  ReservationDocument, RestaurantPublicStatusDocument, Room,
+  ReservationDocument, RestaurantPublicStatusDocument, Room, RoomOffer, StaySearch,
 } from '@/types';
 
 export interface AuthService {
@@ -38,7 +38,17 @@ export interface CrowdStatusService {
   getBathStatus(hotelId: string, bathId: string): Promise<BathPublicStatusDocument | null>;
 }
 
-export interface ReservationService { getOwnReservations(userId: string, hotelId: string): Promise<ReservationDocument[]>; }
+/** Room booking across every group hotel. Reservations are listed per user, not per hotel. */
+export interface ReservationService {
+  getPolicy(): BookingPolicy;
+  /** Today's date at the hotels (Asia/Tokyo). */
+  today(): DateOnly;
+  searchRooms(search: StaySearch): Promise<RoomOffer[]>;
+  createReservation(userId: string, request: BookingRequest): Promise<ReservationDocument>;
+  getOwnReservations(userId: string): Promise<ReservationDocument[]>;
+  getOwnReservation(userId: string, reservationId: string): Promise<ReservationDocument | null>;
+  cancelReservation(userId: string, reservationId: string): Promise<ReservationDocument>;
+}
 /** Membership and points are shared by every group hotel, so these are keyed by user only. */
 export interface MemberService {
   getProfile(userId: string): Promise<MemberProfileDocument | null>;
