@@ -1,0 +1,89 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function owns(userId) { return signedIn() && request.auth.uid == userId; }
+
+    match /publicHotelContent/{hotelId} {
+      allow read: if resource.data.published == true;
+      allow write: if false;
+    }
+
+    match /homeContent/{hotelId} {
+      allow read: if resource.data.published == true;
+      allow write: if false;
+    }
+
+    match /notices/{noticeId} {
+      allow read: if resource.data.published == true;
+      allow write: if false;
+    }
+    match /rooms/{roomId} {
+      allow read: if resource.data.published == true;
+      allow write: if false;
+    }
+    match /facilities/{facilityId} {
+      allow read: if resource.data.published == true;
+      allow write: if false;
+    }
+
+    match /floorGuides/{floorId} {
+      allow read: if resource.data.published == true;
+      allow write: if false;
+    }
+    match /faq/{faqId} {
+      allow read: if resource.data.published == true;
+      allow write: if false;
+    }
+    match /restaurantPublicStatus/{restaurantId} {
+      allow read: if resource.data.isPublic == true;
+      allow write: if false;
+    }
+    match /bathPublicStatus/{bathId} {
+      allow read: if resource.data.isPublic == true;
+      allow write: if false;
+    }
+    match /coupons/{couponId} {
+      allow read: if resource.data.active == true;
+      allow write: if false;
+    }
+    match /appConfig/{configId} {
+      allow read: if configId == 'public';
+      allow write: if false;
+    }
+
+    match /users/{userId} {
+      allow read: if owns(userId);
+      allow write: if false;
+    }
+    match /memberProfiles/{profileId} {
+      allow read: if signedIn() && resource.data.userId == request.auth.uid;
+      allow write: if false;
+    }
+    match /reservations/{reservationId} {
+      allow read: if signedIn() && resource.data.userId == request.auth.uid;
+      allow write: if false;
+    }
+    match /pointAccounts/{accountId} {
+      allow read: if signedIn() && resource.data.userId == request.auth.uid;
+      allow write: if false;
+    }
+    match /pointTransactions/{transactionId} {
+      allow read: if signedIn() && resource.data.userId == request.auth.uid;
+      allow write: if false;
+    }
+    match /couponRedemptions/{redemptionId} {
+      allow read: if signedIn() && resource.data.userId == request.auth.uid;
+      allow write: if false;
+    }
+
+    match /restaurantQueue/{entryId} { allow read, write: if false; }
+    match /deviceTokens/{tokenId} { allow read, write: if false; }
+    match /auditLogs/{auditId} { allow read, write: if false; }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
