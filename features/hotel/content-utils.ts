@@ -18,3 +18,17 @@ export function resolveContentImage(image: ContentImage): ImageSource | number {
 export function getImageAccessibilityLabel(image: ContentImage, language: string): string {
   return getLocalizedText(image.accessibilityLabel, language);
 }
+
+/**
+ * Links in hotel content come from the backend, so only plain https pages are opened.
+ * Anything else (javascript:, data:, http:, malformed) is dropped and its button hidden.
+ */
+export function safeExternalUrl(value: string | undefined): string | null {
+  if (!value) return null;
+  try {
+    const url = new URL(value.trim());
+    return url.protocol === 'https:' && url.hostname && !url.username && !url.password ? url.href : null;
+  } catch {
+    return null;
+  }
+}

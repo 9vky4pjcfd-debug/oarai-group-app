@@ -1,8 +1,8 @@
 import { router, useLocalSearchParams } from 'expo-router';
-import { openBrowserAsync } from 'expo-web-browser';
 import { useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { ExternalLinkButton } from '@/components/ExternalLinkButton';
 import { Badge, Button, Card, EmptyState, Screen, SectionHeader } from '@/components/design-system';
 import { ContentGate } from '@/components/ContentGate';
 import { PageHeader } from '@/components/PageHeader';
@@ -93,7 +93,7 @@ export function NewsDetailScreen() {
                   <Text style={styles.hotel}>{hotel ? localize(hotel.name) : t('news.groupWide')}</Text>
                   <Text style={styles.title}>{localize(item.title)}</Text>
                   <Text style={styles.body}>{localize(item.body)}</Text>
-                  {item.linkUrl ? <Button label={t('news.officialSite')} variant="secondary" onPress={() => void openBrowserAsync(item.linkUrl!)} /> : null}
+                  <ExternalLinkButton label={t('news.officialSite')} url={item.linkUrl} />
                 </Card>
               );
             }}

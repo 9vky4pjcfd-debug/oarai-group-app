@@ -36,6 +36,8 @@ jobs:
         run: |
           cp "dist/+not-found.html" dist/404.html
           touch dist/.nojekyll
+      # GitHub Pages cannot send security headers, so the CSP goes into every page as a meta tag.
+      - run: node scripts/add-web-security-meta.mjs dist
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist

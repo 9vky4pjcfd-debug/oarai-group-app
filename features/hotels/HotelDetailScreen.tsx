@@ -1,7 +1,7 @@
 import { router, useLocalSearchParams } from 'expo-router';
-import * as WebBrowser from 'expo-web-browser';
 import { StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { ExternalLinkButton } from '@/components/ExternalLinkButton';
 import { ContentGate } from '@/components/ContentGate';
 import { DetailLayout } from '@/components/DetailLayout';
 import { Badge, Button, Card, Screen, SectionHeader } from '@/components/design-system';
@@ -39,7 +39,7 @@ export function HotelDetailScreen() {
         </Card>
       ) : null}
       <Button label={t('hotels.reserve')} onPress={() => router.push({ pathname: '/(tabs)/stay/reservation', params: { hotelId: data.hotelId } })} />
-      {data.websiteUrl ? <Button label={t('hotels.website')} variant="secondary" onPress={() => WebBrowser.openBrowserAsync(data.websiteUrl!)} /> : null}
+      <ExternalLinkButton label={t('hotels.website')} url={data.websiteUrl} />
       {data.hotelId === DEFAULT_HOTEL_ID ? <MenuRow icon="pulse-outline" title={t('home.liveTitle')} description={t('facilities.crowdDescription')} href="/(tabs)/facilities/crowd" /> : null}
       <SectionHeader title={t('hotels.rooms')} />
       <HotelRooms hotelId={data.hotelId} limit={4} />

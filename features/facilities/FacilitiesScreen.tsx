@@ -1,14 +1,14 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
-import * as WebBrowser from 'expo-web-browser';
 import { useState } from 'react';
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { ExternalLinkButton } from '@/components/ExternalLinkButton';
 import { AppHeader } from '@/components/AppHeader';
 import { ContentCard } from '@/components/ContentCard';
 import { ContentGate } from '@/components/ContentGate';
 import { MenuRow } from '@/components/MenuRow';
-import { Button, Card, CardGrid, CardGridItem, Screen, SectionHeader } from '@/components/design-system';
+import { Card, CardGrid, CardGridItem, Screen, SectionHeader } from '@/components/design-system';
 import { colors, DEFAULT_HOTEL_ID, radii, spacing, typography } from '@/constants';
 import { useFacilities, useHotels, useLocalized } from '@/features/content';
 import { resolveContentImage } from '@/features/hotel/content-utils';
@@ -48,7 +48,7 @@ function HotelFacilities({ hotelId, hotel }: { hotelId: string; hotel: HotelPubl
       {(list) => list.length === 0 ? (
         <Card style={styles.emptyCard}>
           <Text style={styles.emptyText}>{t('ui.noFacilities')}</Text>
-          {hotel?.websiteUrl ? <Button label={t('hotels.website')} variant="secondary" onPress={() => WebBrowser.openBrowserAsync(hotel.websiteUrl!)} /> : null}
+          <ExternalLinkButton label={t('hotels.website')} url={hotel?.websiteUrl} />
         </Card>
       ) : (
         <CardGrid>

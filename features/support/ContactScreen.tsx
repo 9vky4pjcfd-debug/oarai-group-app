@@ -1,6 +1,6 @@
-import * as WebBrowser from 'expo-web-browser';
 import { Linking, StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { ExternalLinkButton } from '@/components/ExternalLinkButton';
 import { ContentGate } from '@/components/ContentGate';
 import { PageHeader } from '@/components/PageHeader';
 import { Button, Card, CardGrid, CardGridItem, Screen, SectionHeader } from '@/components/design-system';
@@ -27,7 +27,7 @@ export function ContactScreen() {
                     {hotel.phone ? <Text style={styles.phone}>{hotel.phone}</Text> : null}
                   </View>
                   {hotel.phone ? <Button label={t('ui.callHotel')} onPress={() => void Linking.openURL(`tel:${hotel.phone!.replace(/[^0-9+]/g, '')}`)} /> : null}
-                  {hotel.websiteUrl ? <Button label={t('hotels.website')} variant="secondary" onPress={() => WebBrowser.openBrowserAsync(hotel.websiteUrl!)} /> : null}
+                  <ExternalLinkButton label={t('hotels.website')} url={hotel.websiteUrl} />
                 </Card>
               </CardGridItem>
             ))}
