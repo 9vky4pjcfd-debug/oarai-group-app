@@ -12,7 +12,6 @@ import { useHotels, useLocalized } from '@/features/content';
 import { useMemberFormat } from '@/features/member/member-format';
 import { useMemberIdentity, useMembership } from '@/features/member/membership';
 import { HotelCard } from '@/features/hotels/HotelCard';
-import { LatestNews } from '@/features/news/NewsScreens';
 
 export function HomeScreen() {
   const { t } = useTranslation();
@@ -41,8 +40,6 @@ export function HomeScreen() {
       </View>
 
       <HomePointsCard />
-
-      <LatestNews />
 
       <SectionHeader eyebrow={t('hotels.eyebrow')} title={t('hotels.title')} description={t('hotels.subtitle')} />
       <ContentGate state={hotels} onRetry={hotels.reload}>

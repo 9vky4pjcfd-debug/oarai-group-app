@@ -1,9 +1,9 @@
-import { router, useLocalSearchParams } from 'expo-router';
-import { useMemo, useState } from 'react';
+import { useLocalSearchParams } from 'expo-router';
+import { useEffect, useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { ExternalLinkButton } from '@/components/ExternalLinkButton';
-import { Badge, Button, Card, EmptyState, Screen, SectionHeader } from '@/components/design-system';
+import { Badge, Card, EmptyState, Screen, SectionHeader } from '@/components/design-system';
 import { ContentGate } from '@/components/ContentGate';
 import { PageHeader } from '@/components/PageHeader';
 import { environmentConfig } from '@/config';
@@ -13,6 +13,7 @@ import { filterNotices, type NoticeFilter } from '@/services/hotel/notice-utils'
 import type { HotelPublicProfile } from '@/types';
 import { NoticeRow } from './NoticeRow';
 import { useNewsFormat } from './news-format';
+import { markNewsSeen } from './news-seen';
 
 export function useHotelMap() {
   const hotels = useHotels();
@@ -26,6 +27,7 @@ export function NewsListScreen() {
   const [filter, setFilter] = useState<NoticeFilter>(params.hotelId ?? 'all');
   const notices = useAllNotices();
   const { hotels, map } = useHotelMap();
+  useEffect(markNewsSeen, []);
 
   return (
     <Screen>
@@ -104,23 +106,6 @@ export function NewsDetailScreen() {
 }
 
 /** Home screen block: the newest few notices and a link to the full list. */
-export function LatestNews({ limit = 3 }: { limit?: number }) {
-  const { t } = useTranslation();
-  const notices = useAllNotices();
-  const { map } = useHotelMap();
-  return (
-    <>
-      <SectionHeader eyebrow={t('news.eyebrow')} title={t('news.title')} />
-      <ContentGate state={notices} onRetry={notices.reload}>
-        {(list) => list.length === 0
-          ? <EmptyState title={t('news.empty')} />
-          : <View style={styles.list}>{list.slice(0, limit).map((notice) => <NoticeRow key={notice.noticeId} notice={notice} hotels={map} />)}</View>}
-      </ContentGate>
-      <Button label={t('news.viewAll')} variant="ghost" onPress={() => router.push('/(tabs)/home/news')} />
-    </>
-  );
-}
-
 const styles = StyleSheet.create({
   list: { gap: spacing.sm },
   chips: { gap: spacing.xs },
