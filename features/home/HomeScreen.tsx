@@ -32,22 +32,22 @@ export function HomeScreen() {
         </View>
       </View>
 
+      {/* The four things returning guests come back for, right under the search button. */}
+      <View style={styles.quickRow}>
+        <QuickAction icon="receipt-outline" label={t('booking.myReservations')} onPress={() => router.push('/(tabs)/stay/booking/reservations')} />
+        <QuickAction icon="qr-code-outline" label={t('member.qr')} onPress={() => router.push('/(tabs)/member/qr')} />
+        <QuickAction icon="bed-outline" label={t('rooms.title')} onPress={() => router.push('/(tabs)/stay')} />
+        <QuickAction icon="call-outline" label={t('support.contact')} onPress={() => router.push('/(tabs)/support/contact')} />
+      </View>
+
+      <HomePointsCard />
+
       <LatestNews />
 
       <SectionHeader eyebrow={t('hotels.eyebrow')} title={t('hotels.title')} description={t('hotels.subtitle')} />
       <ContentGate state={hotels} onRetry={hotels.reload}>
         {(list) => <CardGrid>{list.map((hotel) => <CardGridItem key={hotel.hotelId}><HotelCard hotel={hotel} /></CardGridItem>)}</CardGrid>}
       </ContentGate>
-
-      <SectionHeader title={t('home.explore')} />
-      <View style={styles.quickGrid}>
-        <QuickCard icon="bed-outline" label={t('rooms.title')} onPress={() => router.push('/(tabs)/stay')} />
-        <QuickCard icon="map-outline" label={t('ui.facilitiesTitle')} onPress={() => router.push('/(tabs)/facilities')} />
-        <QuickCard icon="qr-code-outline" label={t('member.qr')} onPress={() => router.push('/(tabs)/member/qr')} />
-        <QuickCard icon="help-circle-outline" label={t('support.faq')} onPress={() => router.push('/(tabs)/support/faq')} />
-      </View>
-
-      <HomePointsCard />
     </Screen>
   );
 }
@@ -72,21 +72,27 @@ function HomePointsCard() {
   );
 }
 
-function QuickCard({ icon, label, onPress }: { icon: React.ComponentProps<typeof Ionicons>['name']; label: string; onPress: () => void }) {
-  return <Pressable onPress={onPress} style={({ pressed }) => [styles.quickCard, pressed && styles.pressed]}><Ionicons color={colors.accent} name={icon} size={26} /><Text style={styles.quickLabel}>{label}</Text></Pressable>;
+function QuickAction({ icon, label, onPress }: { icon: React.ComponentProps<typeof Ionicons>['name']; label: string; onPress: () => void }) {
+  return (
+    <Pressable accessibilityRole="button" onPress={onPress} style={({ pressed }) => [styles.quickAction, pressed && styles.pressed]}>
+      <View style={styles.quickIcon}><Ionicons color={colors.brand} name={icon} size={24} /></View>
+      <Text numberOfLines={2} style={styles.quickLabel}>{label}</Text>
+    </Pressable>
+  );
 }
 
 const styles = StyleSheet.create({
   screen: { paddingTop: spacing.sm },
   absolute: { bottom: 0, left: 0, position: 'absolute', right: 0, top: 0 },
-  hero: { borderRadius: radii.lg, height: 430, justifyContent: 'flex-end', overflow: 'hidden', padding: spacing.lg },
+  hero: { borderRadius: radii.lg, height: 380, justifyContent: 'flex-end', overflow: 'hidden', padding: spacing.lg },
   heroCopy: { gap: spacing.sm, maxWidth: 560 },
   eyebrow: { ...typography.caption, color: colors.white, letterSpacing: 3 },
   headline: { ...typography.display, color: colors.white },
   subheadline: { ...typography.body, color: colors.white },
-  quickGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
-  quickCard: { alignItems: 'center', backgroundColor: colors.surface, borderColor: colors.border, borderRadius: radii.lg, borderWidth: 1, flexBasis: 150, flexGrow: 1, gap: spacing.xs, justifyContent: 'center', minHeight: 108, padding: spacing.sm },
-  quickLabel: { ...typography.label, color: colors.text, textAlign: 'center' },
+  quickRow: { backgroundColor: colors.surface, borderColor: colors.border, borderRadius: radii.lg, borderWidth: 1, flexDirection: 'row', marginTop: -spacing.sm, paddingVertical: spacing.sm },
+  quickAction: { alignItems: 'center', flex: 1, gap: spacing.xxs, paddingHorizontal: spacing.xxs },
+  quickIcon: { alignItems: 'center', backgroundColor: colors.accentSoft, borderRadius: radii.pill, height: 48, justifyContent: 'center', width: 48 },
+  quickLabel: { ...typography.caption, color: colors.text, fontWeight: '700', textAlign: 'center' },
   pressed: { opacity: 0.75 },
   pointsCard: { alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between' },
   pointsLabel: { ...typography.caption, color: colors.textMuted },

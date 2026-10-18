@@ -16,6 +16,7 @@ export function RoomCard({ room }: { room: Room }) {
       title={l(room.name)}
       description={[l(room.roomSize), formatCapacity(room, t), ...room.features.map(l)].filter(Boolean).join('・')}
       href={{ pathname: '/(tabs)/stay/room/[id]', params: { id: room.roomId, hotelId: room.hotelId } }}
+      compact
     />
   );
 }
