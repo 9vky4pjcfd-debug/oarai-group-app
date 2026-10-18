@@ -5,10 +5,10 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { ContentGate } from '@/components/ContentGate';
 import { PageHeader } from '@/components/PageHeader';
-import { PlaceholderPanel } from '@/components/PlaceholderPanel';
 import { Badge, Button, EmptyState, Screen } from '@/components/design-system';
 import { colors, radii, spacing, typography } from '@/constants';
 import { useHotels, useLocalized, useRoom } from '@/features/content';
+import { SignInPrompt } from '@/features/auth/SignInPrompt';
 import { useMemberIdentity } from '@/features/member/membership';
 import { services } from '@/services';
 import type { HotelPublicProfile, ReservationDocument } from '@/types';
@@ -32,7 +32,7 @@ export function MyReservationsScreen() {
   }, [reload]));
 
   const header = <><PageHeader title={t('booking.myReservations')} backLabel={t('common.back')} /><Text style={styles.description}>{t('booking.myReservationsDescription')}</Text></>;
-  if (identity.status === 'signed-out') return <Screen>{header}<PlaceholderPanel icon="person-circle-outline" title={t('booking.myReservations')} description={t('booking.signInRequired')} /></Screen>;
+  if (identity.status === 'signed-out') return <Screen>{header}<SignInPrompt title={t('booking.myReservations')} description={t('booking.signInRequired')} redirect="/(tabs)/stay/booking/reservations" /></Screen>;
 
   const hotelById = new Map((hotels.data ?? []).map((hotel) => [hotel.hotelId, hotel]));
   return (

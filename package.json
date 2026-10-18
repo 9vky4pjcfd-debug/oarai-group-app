@@ -54,7 +54,8 @@
     "doctor": "npx expo-doctor",
     "test": "vitest run",
     "test:rules": "node scripts/run-firestore-rules-tests.mjs",
-    "test:rules:only": "vitest run tests/rules"
+    "test:rules:only": "vitest run tests/rules",
+    "test:backend": "node scripts/run-backend-e2e.mjs"
   },
   "private": true
 }

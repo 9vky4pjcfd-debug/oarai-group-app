@@ -3,7 +3,9 @@ export type LocalizedText = Partial<Record<ContentLanguage, string>>;
 
 export type ContentImage =
   | { kind: 'local'; source: number; accessibilityLabel: LocalizedText }
-  | { kind: 'remote'; uri: string; accessibilityLabel: LocalizedText };
+  | { kind: 'remote'; uri: string; accessibilityLabel: LocalizedText }
+  /** An image shipped inside the app, named by its path under `assets/` (e.g. `content/room-stylish.jpg`), so backend content can point at it. */
+  | { kind: 'bundled'; key: string; accessibilityLabel: LocalizedText };
 
 export interface HotelLink {
   id: string;

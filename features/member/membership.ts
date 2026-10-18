@@ -29,13 +29,15 @@ export interface MembershipSummary {
 
 /** Profile, group-wide balance and tier. Resolves to null for a user who has no membership yet. */
 export function useMembership(userId: string | null) {
-  return useContent(`membership:${userId ?? '-'}`, async (): Promise<MembershipSummary | null> => {
-    if (!userId) return null;
-    const [profile, account, tiers] = await Promise.all([services.member.getProfile(userId), services.points.getAccount(userId), services.member.getTiers()]);
-    if (!profile || !account || tiers.length === 0) return null;
-    // The tier is recomputed from qualifying points so the card stays right even if the stored tier lags behind.
-    return { profile, account, tiers, progress: getTierProgress(account.qualifyingPoints, tiers) };
-  });
+  return useContent(`membership:${userId ?? '-'}`, () => loadMembership(userId));
+}
+
+export async function loadMembership(userId: string | null): Promise<MembershipSummary | null> {
+  if (!userId) return null;
+  const [profile, account, tiers] = await Promise.all([services.member.getProfile(userId), services.points.getAccount(userId), services.member.getTiers()]);
+  if (!profile || !account || tiers.length === 0) return null;
+  // The tier is recomputed from qualifying points so the card stays right even if the stored tier lags behind.
+  return { profile, account, tiers, progress: getTierProgress(account.qualifyingPoints, tiers) };
 }
 
 export interface PointHistory { transactions: PointTransactionDocument[]; hotels: Map<string, HotelPublicProfile>; }

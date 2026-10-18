@@ -1,20 +1,23 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
-import { StyleSheet, Text, TextInput, View, type TextInputProps } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { ContentGate } from '@/components/ContentGate';
+import { FormField } from '@/components/FormField';
 import { PageHeader } from '@/components/PageHeader';
-import { PlaceholderPanel } from '@/components/PlaceholderPanel';
 import { Badge, Button, Card, EmptyState, Screen, SectionHeader } from '@/components/design-system';
 import { environmentConfig } from '@/config';
-import { colors, radii, spacing, typography } from '@/constants';
+import { colors, spacing, typography } from '@/constants';
 import { useHotel, useLocalized } from '@/features/content';
 import { useAuthState } from '@/features/auth/AuthProvider';
+import { EmailVerificationNotice } from '@/features/auth/EmailVerificationNotice';
+import { SignInPrompt } from '@/features/auth/SignInPrompt';
 import { useMemberIdentity, useMembership } from '@/features/member/membership';
 import { calculateEarnedPoints } from '@/features/member/membership-rules';
 import { contactErrors, type ContactField } from '@/services/booking/booking-rules';
 import { bookingFailureReason } from '@/services/booking/ReservationServiceImpl';
 import { services } from '@/services';
+import { serverRefusalReason } from '@/services/errors/error-mapper';
 import type { GuestContact, RoomOffer, StaySearch } from '@/types';
 import { parseStayParams, toStayParams, useBookingFormat, useRoomOffers, type StayParams } from './booking';
 import { CancellationPolicy } from './CancellationPolicy';
@@ -30,7 +33,7 @@ export function BookingConfirmScreen() {
 
   const header = <><PageHeader title={t('booking.title')} backLabel={t('common.back')} /><SectionHeader eyebrow={t('booking.stepConfirm')} title={t('booking.confirmTitle')} /></>;
   if (!search || !params.roomId) return <Screen>{header}<EmptyState title={t('state.empty')} /></Screen>;
-  if (identity.status === 'signed-out') return <Screen>{header}<PlaceholderPanel icon="person-circle-outline" title={t('booking.confirmTitle')} description={t('booking.signInRequired')} /></Screen>;
+  if (identity.status === 'signed-out') return <Screen>{header}<SignInPrompt title={t('booking.confirmTitle')} description={t('booking.signInRequired')} redirect={confirmUrl(search, params.roomId)} /></Screen>;
 
   return (
     <Screen keyboardShouldPersistTaps="handled">
@@ -44,6 +47,12 @@ export function BookingConfirmScreen() {
       </ContentGate>
     </Screen>
   );
+}
+
+/** This step's own URL, so signing in comes straight back to the same booking. */
+function confirmUrl(search: StaySearch, roomId: string) {
+  const query = Object.entries(toStayParams(search, roomId)).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  return `/(tabs)/stay/booking/confirm?${query}`;
 }
 
 function SoldOut({ search }: { search: StaySearch }) {
@@ -71,7 +80,9 @@ function ConfirmForm({ offer, search, userId, onPriceChanged }: { offer: RoomOff
   const [notes, setNotes] = useState('');
   const [touched, setTouched] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [failure, setFailure] = useState<'sold-out' | 'price-changed' | 'other' | null>(null);
+  const [failure, setFailure] = useState<'sold-out' | 'price-changed' | 'email-not-verified' | 'other' | null>(null);
+  const user = auth.session?.user;
+  const unverified = environmentConfig.backendMode === 'firebase' && user?.emailVerified === false;
 
   const contact: GuestContact = { ...details, name: typedName ?? membership.data?.profile.displayName ?? '' };
 
@@ -81,14 +92,14 @@ function ConfirmForm({ offer, search, userId, onPriceChanged }: { offer: RoomOff
 
   const submit = async () => {
     setTouched(true);
-    if (errors.length > 0 || !userId) return;
+    if (errors.length > 0 || !userId || unverified) return;
     setSubmitting(true);
     setFailure(null);
     try {
       const reservation = await services.reservations.createReservation(userId, { ...search, roomId: offer.roomId, contact, notes, quotedTotal: offer.totalAmount });
       router.replace({ pathname: '/(tabs)/stay/booking/detail', params: { reservationId: reservation.reservationId, created: '1' } });
     } catch (error) {
-      const reason = bookingFailureReason(error);
+      const reason = bookingFailureReason(error) ?? (serverRefusalReason(error) === 'email-not-verified' ? 'email-not-verified' : null);
       setFailure(reason ?? 'other');
       if (reason === 'price-changed') onPriceChanged();
     } finally {
@@ -122,29 +133,20 @@ function ConfirmForm({ offer, search, userId, onPriceChanged }: { offer: RoomOff
       </Card>
       <Card style={styles.card}>
         <Text style={styles.label}>{t('booking.contact')}</Text>
-        <Field label={t('booking.name')} error={showError('name') ? t('booking.nameError') : undefined} value={contact.name} onChangeText={setTypedName} autoComplete="name" textContentType="name" />
-        <Field label={t('booking.phone')} error={showError('phone') ? t('booking.phoneError') : undefined} value={contact.phone} onChangeText={(phone) => setDetails({ ...details, phone })} autoComplete="tel" keyboardType="phone-pad" textContentType="telephoneNumber" />
-        <Field label={t('booking.email')} error={showError('email') ? t('booking.emailError') : undefined} value={contact.email} onChangeText={(email) => setDetails({ ...details, email })} autoCapitalize="none" autoComplete="email" keyboardType="email-address" textContentType="emailAddress" />
-        <Field label={t('booking.notes')} value={notes} onChangeText={setNotes} placeholder={t('booking.notesPlaceholder')} multiline maxLength={500} />
+        <FormField label={t('booking.name')} error={showError('name') ? t('booking.nameError') : undefined} value={contact.name} onChangeText={setTypedName} autoComplete="name" textContentType="name" />
+        <FormField label={t('booking.phone')} error={showError('phone') ? t('booking.phoneError') : undefined} value={contact.phone} onChangeText={(phone) => setDetails({ ...details, phone })} autoComplete="tel" keyboardType="phone-pad" textContentType="telephoneNumber" />
+        <FormField label={t('booking.email')} error={showError('email') ? t('booking.emailError') : undefined} value={contact.email} onChangeText={(email) => setDetails({ ...details, email })} autoCapitalize="none" autoComplete="email" keyboardType="email-address" textContentType="emailAddress" />
+        <FormField label={t('booking.notes')} value={notes} onChangeText={setNotes} placeholder={t('booking.notesPlaceholder')} multiline maxLength={500} />
       </Card>
-      {failure ? <Text accessibilityLiveRegion="assertive" style={styles.error}>{failure === 'price-changed' ? t('booking.priceChangedError') : t('booking.submitError')}</Text> : null}
-      <Button label={t('booking.submit')} loading={submitting} onPress={submit} />
+      {unverified || failure === 'email-not-verified' ? <EmailVerificationNotice email={user?.email ?? null} message={t('auth.verify.bookingMessage')} /> : null}
+      {failure && failure !== 'email-not-verified' ? <Text accessibilityLiveRegion="assertive" style={styles.error}>{failure === 'price-changed' ? t('booking.priceChangedError') : t('booking.submitError')}</Text> : null}
+      <Button label={t('booking.submit')} loading={submitting} disabled={unverified} onPress={submit} />
     </>
   );
 }
 
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
   return <View style={styles.row}><Text style={styles.rowLabel}>{label}</Text><View style={styles.rowValue}>{children}</View></View>;
-}
-
-function Field({ label, error, multiline, ...props }: TextInputProps & { label: string; error?: string | undefined }) {
-  return (
-    <View style={styles.field}>
-      <Text style={styles.fieldLabel}>{label}</Text>
-      <TextInput accessibilityLabel={label} multiline={multiline} placeholderTextColor={colors.textMuted} style={[styles.input, multiline && styles.multiline, error ? styles.inputError : null]} {...props} />
-      {error ? <Text style={styles.error}>{error}</Text> : null}
-    </View>
-  );
 }
 
 const styles = StyleSheet.create({
@@ -159,10 +161,5 @@ const styles = StyleSheet.create({
   line: { flexDirection: 'row', justifyContent: 'space-between' },
   totalLine: { alignItems: 'center', borderTopColor: colors.border, borderTopWidth: 1, paddingTop: spacing.sm },
   total: { ...typography.heading, color: colors.brand },
-  field: { gap: spacing.xxs },
-  fieldLabel: { ...typography.caption, color: colors.textMuted },
-  input: { ...typography.body, backgroundColor: colors.background, borderColor: colors.border, borderRadius: radii.md, borderWidth: 1, color: colors.text, minHeight: 48, paddingHorizontal: spacing.sm, paddingVertical: spacing.xs },
-  multiline: { minHeight: 88, textAlignVertical: 'top' },
-  inputError: { borderColor: colors.error },
   error: { ...typography.caption, color: colors.error },
 });

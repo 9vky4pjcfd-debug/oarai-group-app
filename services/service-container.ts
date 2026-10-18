@@ -1,7 +1,7 @@
 import { environmentConfig, isFirebaseConfigured } from '@/config';
 import type { CrowdStatusRepository, HotelRepository, MemberRepository, PointRepository, ReservationRepository } from '@/repositories';
-import { FirebaseAuthRepository, FirebaseCrowdStatusRepository, FirebaseHotelRepository, FirebaseMemberRepository, FirebasePointRepository, FirebaseReservationRepository } from '@/repositories/firebase';
-import { MockAuthRepository, MockCrowdStatusRepository, MockHotelRepository, MockMemberRepository, MockPointRepository, MockReservationRepository } from '@/repositories/mock';
+import { FirebaseAdminGateway, FirebaseAuthRepository, FirebaseCrowdStatusRepository, FirebaseHotelRepository, FirebaseMemberRepository, FirebasePointRepository, FirebaseReservationRepository } from '@/repositories/firebase';
+import { MockAuthRepository, UnavailableAdminGateway, MockCrowdStatusRepository, MockHotelRepository, MockMemberRepository, MockPointRepository, MockReservationRepository } from '@/repositories/mock';
 import { mockGroupRooms } from '@/repositories/mock/mock-group-hotels';
 import { createDeviceStore } from '@/repositories/mock/device-store';
 import { AppError, type NotificationPreferences } from '@/types';
@@ -28,7 +28,11 @@ export const services: ServiceRegistry = {
   auth: new AuthServiceImpl(authRepository),
   hotelContent,
   crowdStatus: new CrowdStatusServiceImpl(crowdRepository),
-  member: { getProfile: (userId) => memberRepository.getProfile(userId), getTiers: () => memberRepository.getTiers() },
+  member: {
+    getProfile: (userId) => memberRepository.getProfile(userId),
+    getTiers: () => memberRepository.getTiers(),
+    ensureProfile: (input) => memberRepository.ensureProfile(input),
+  },
   points: {
     getAccount: (userId) => pointRepository.getAccount(userId),
     getTransactions: (userId, limit) => pointRepository.getTransactions(userId, limit),
@@ -36,4 +40,5 @@ export const services: ServiceRegistry = {
   },
   reservations: new ReservationServiceImpl(reservationRepository, hotelContent),
   notifications: { getPreferences: async () => notificationDefaults, updatePreferences: async () => undefined },
+  admin: useFirebase ? new FirebaseAdminGateway() : new UnavailableAdminGateway(),
 };

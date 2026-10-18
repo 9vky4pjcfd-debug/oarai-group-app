@@ -5,10 +5,10 @@ import { Linking, StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { ContentGate } from '@/components/ContentGate';
 import { PageHeader } from '@/components/PageHeader';
-import { PlaceholderPanel } from '@/components/PlaceholderPanel';
 import { Button, Card, Screen } from '@/components/design-system';
 import { colors, radii, spacing, typography } from '@/constants';
 import { useHotel, useLocalized, useRoom } from '@/features/content';
+import { SignInPrompt } from '@/features/auth/SignInPrompt';
 import { useMemberIdentity } from '@/features/member/membership';
 import { environmentConfig } from '@/config';
 import { cancellationFee, cancellationFeeRate, canCancelInApp, daysBetween } from '@/services/booking/booking-rules';
@@ -28,7 +28,7 @@ export function ReservationDetailScreen() {
     <Screen>
       <PageHeader title={t('booking.detailTitle')} backLabel={t('common.back')} />
       {identity.status === 'signed-out'
-        ? <PlaceholderPanel icon="person-circle-outline" title={t('booking.detailTitle')} description={t('booking.signInRequired')} />
+        ? <SignInPrompt title={t('booking.detailTitle')} description={t('booking.signInRequired')} redirect={`/(tabs)/stay/booking/detail?reservationId=${encodeURIComponent(reservationId)}`} />
         : <ContentGate state={reservation} onRetry={reservation.reload}>{(data) => <Detail initial={data} userId={identity.userId!} justCreated={created === '1'} />}</ContentGate>}
     </Screen>
   );

@@ -1,4 +1,5 @@
 import type { ImageSource } from 'expo-image';
+import { bundledImages } from '@/constants/bundled-images';
 import type { ContentImage, ContentLanguage, LocalizedText } from '@/types';
 
 export function getLocalizedText(value: LocalizedText | undefined, language: string): string {
@@ -12,7 +13,9 @@ export function getLocalizedText(value: LocalizedText | undefined, language: str
 }
 
 export function resolveContentImage(image: ContentImage): ImageSource | number {
-  return image.kind === 'local' ? image.source : { uri: image.uri };
+  if (image.kind === 'local') return image.source;
+  if (image.kind === 'bundled') return bundledImages[image.key] ?? { uri: '' };
+  return { uri: image.uri };
 }
 
 export function getImageAccessibilityLabel(image: ContentImage, language: string): string {

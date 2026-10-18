@@ -23,6 +23,7 @@
   ],
   "exclude": [
     "src",
-    "scripts"
+    "scripts",
+    "functions"
   ]
 }

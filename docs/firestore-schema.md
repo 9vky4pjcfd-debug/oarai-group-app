@@ -15,6 +15,9 @@ All business collections include `hotelId` unless the document is globally scope
 | `reservations` | reservation ID | One booked room, group-wide per user (`userId`, `hotelId`, `roomId`, dates, party, total, contact). Owner read; written only by booking Cloud Functions. See [booking.md](booking.md) |
 | `bookingInventory` | `hotelId__roomId__date` | App allotment and adult rate per room type per night; server-only. See [booking.md](booking.md) |
 | `hotelBookingContacts` | `hotelId` | Where booking notices are emailed; server-only |
+| `mail` | generated | Outgoing email queue read by the Trigger Email extension (`to`, `message.subject`, `message.text`); server-only |
+| `staffMembers` | Firebase Auth UID | Roster of staff roles and hotels, mirroring their Custom Claims (`role`, `hotels`); server-only |
+| `counters` | `membership` | Next membership number; server-only |
 | `restaurantPublicStatus` | `hotelId__restaurantId` | Aggregated public summary only |
 | `restaurantQueue` | queue entry ID | Server-only internal queue |
 | `bathPublicStatus` | `hotelId__bathId` | Aggregated public summary only |
@@ -30,7 +33,7 @@ All business collections include `hotelId` unless the document is globally scope
 
 Reservations retain `reservationId`, `userId`, `hotelId`, `roomId`, `confirmationCode`, `externalReservationId`, `status`, `checkIn` / `checkOut` (hotel-local `YYYY-MM-DD`), `rooms`, `adults`, `children`, `infants`, `guestCount`, `totalAmount`, `currency`, `paymentMethod`, `contact` (lead guest name, phone, email), `notes`, `cancelledAt`, `createdAt` and `updatedAt`. Card numbers, CVV and complete payment data must never be stored.
 
-Point transactions retain `transactionId`, `userId`, `hotelId` (the property where points were earned or used; `null` for group-wide adjustments), `type`, `amount`, `balanceBefore`, `balanceAfter`, `source`, `referenceId`, `description` and `createdAt`. Balance and ledger changes must occur in one server transaction and produce an audit log.
+Point transactions retain `transactionId`, `basePoints` (earn entries only; sums to the tier's qualifying points), `userId`, `hotelId` (the property where points were earned or used; `null` for group-wide adjustments), `type`, `amount`, `balanceBefore`, `balanceAfter`, `source`, `referenceId`, `description` and `createdAt`. Balance and ledger changes must occur in one server transaction and produce an audit log.
 
 ## Group membership and points
 

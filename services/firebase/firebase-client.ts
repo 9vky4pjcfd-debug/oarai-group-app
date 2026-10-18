@@ -1,7 +1,7 @@
 import { getApp, getApps, initializeApp, type FirebaseApp } from 'firebase/app';
-import { getFirestore, type Firestore } from 'firebase/firestore';
-import { getFunctions, type Functions } from 'firebase/functions';
-import { firebaseOptions } from '@/config';
+import { connectFirestoreEmulator, getFirestore, type Firestore } from 'firebase/firestore';
+import { connectFunctionsEmulator, getFunctions, type Functions } from 'firebase/functions';
+import { environmentConfig, firebaseOptions } from '@/config';
 import { AppError } from '@/types';
 
 let app: FirebaseApp | null = null;
@@ -17,12 +17,21 @@ export function getFirebaseClientApp(): FirebaseApp {
   return app;
 }
 
+/** Local emulator host (e.g. `127.0.0.1`) for development and end-to-end tests; never used in production. */
+export const emulatorHost = environmentConfig.isProduction ? undefined : process.env.EXPO_PUBLIC_FIREBASE_EMULATOR_HOST || undefined;
+
 export function getFirestoreClient(): Firestore {
-  firestore ??= getFirestore(getFirebaseClientApp());
+  if (!firestore) {
+    firestore = getFirestore(getFirebaseClientApp());
+    if (emulatorHost) connectFirestoreEmulator(firestore, emulatorHost, 8080);
+  }
   return firestore;
 }
 
 export function getFunctionsClient(): Functions {
-  functions ??= getFunctions(getFirebaseClientApp(), FUNCTIONS_REGION);
+  if (!functions) {
+    functions = getFunctions(getFirebaseClientApp(), FUNCTIONS_REGION);
+    if (emulatorHost) connectFunctionsEmulator(functions, emulatorHost, 5001);
+  }
   return functions;
 }

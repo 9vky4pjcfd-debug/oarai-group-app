@@ -41,15 +41,15 @@ Reads come from Firestore; commands go to callable Cloud Functions in `asia-nort
 | `bookingCreateReservation` | `BookingRequest` | `ReservationDocument` | re-validate, lock stock, re-quote; reject with `failed-precondition` and `details.reason` = `sold-out` or `price-changed`; write `reservations/{reservationId}` and an audit log |
 | `bookingCancelReservation` | `{ reservationId }` | `ReservationDocument` | check owner and the cancellation deadline; release stock |
 
-Both commands also send email (for example with the Firebase "Trigger Email" extension): a confirmation to `contact.email`, and a notice to the hotel's reservation address so staff can enter the booking into 支配人くん. Hotel addresses live in a server-only collection `hotelBookingContacts/{hotelId}` (`emails: string[]`).
+Both commands also queue email in the `mail` collection, which the Firebase "Trigger Email from Firestore" extension sends: a confirmation to `contact.email` in the member's language, and a Japanese notice to the hotel's reservation addresses so staff can enter the booking into 支配人くん. Hotel addresses live in the server-only `hotelBookingContacts/{hotelId}` (`emails: string[]`), set by managers in the app's hotel tools. Until the extension is installed, mail waits in the queue.
 
-These functions are not written yet. Until they are, the app runs in mock mode.
+The functions live in `functions/src/booking.ts`. They require a verified email for booking, allow 10 upcoming reservations per member, and reuse `services/booking/booking-rules.ts`, which the build bundles into the server. `pointsAwardCompletedStays` runs daily at 06:00 Japan time: stays that checked out the day before become `completed` and earn points (1 per ¥100 × tier rate). Staff cancel a no-show before then.
 
 ## Stock and rates: 支配人くん
 
 The hotels run 支配人くん, and an API for it is unlikely, so the app cannot read live stock. The plan is an **app allotment**:
 
-1. Each hotel sets aside a number of rooms per room type per date for app sales, with the adult rate for that date, in a server-only collection `bookingInventory/{hotelId}__{roomId}__{date}` (`allotment`, `booked`, `adultRate`, `closed`). Staff maintain it through an admin page or a CSV upload (not built yet).
+1. Each hotel sets aside a number of rooms per room type per date for app sales, with the adult rate for that date, in a server-only collection `bookingInventory/{hotelId}__{roomId}__{date}` (`allotment`, `booked`, `adultRate`, `closed`). Staff maintain it in the app under Account → Hotel tools → 販売枠・料金 (`/account/admin/inventory`). A night with no allotment or no rate is not sold.
 2. `bookingGetAvailability` returns `allotment − booked`; `bookingCreateReservation` increments `booked` in a transaction, so the app never sells more than its allotment.
 3. The hotel notice email tells staff to enter the booking into 支配人くん and close those rooms there; cancellations work the other way.
 

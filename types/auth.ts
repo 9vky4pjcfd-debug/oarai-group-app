@@ -8,6 +8,9 @@ export interface User {
   emailVerified: boolean;
   role: MemberRole;
   roleSource: 'custom-claims';
+  /** Hotels a staff member or manager may manage (from Custom Claims); admins manage every hotel. */
+  hotelIds: string[];
+  displayName?: string | null | undefined;
 }
 
 export interface AuthSession {

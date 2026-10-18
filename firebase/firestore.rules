@@ -87,6 +87,10 @@ service cloud.firestore {
     // Booking stock, rates and hotel notice addresses are read and written only by booking Cloud Functions.
     match /bookingInventory/{inventoryId} { allow read, write: if false; }
     match /hotelBookingContacts/{hotelId} { allow read, write: if false; }
+    // Outgoing email queue (Trigger Email extension), staff roster and counters are written only by Cloud Functions.
+    match /mail/{mailId} { allow read, write: if false; }
+    match /staffMembers/{userId} { allow read, write: if false; }
+    match /counters/{counterId} { allow read, write: if false; }
     match /deviceTokens/{tokenId} { allow read, write: if false; }
     match /auditLogs/{auditId} { allow read, write: if false; }
 

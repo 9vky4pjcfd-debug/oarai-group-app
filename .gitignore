@@ -38,6 +38,8 @@ ui-debug.log
 .env
 .env.*
 !.env.example
+# Public Firebase web config for the GitHub Pages build (no secrets)
+!.env.production
 
 # typescript
 *.tsbuildinfo

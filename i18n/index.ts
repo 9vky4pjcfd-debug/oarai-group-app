@@ -3,6 +3,8 @@ import { getLocales } from 'expo-localization';
 import { createInstance, type LanguageDetectorAsyncModule } from 'i18next';
 import { Platform } from 'react-native';
 import { initReactI18next } from 'react-i18next';
+import { adminText } from './locales/admin';
+import { authText } from './locales/auth';
 import { en } from './locales/en';
 import { ja } from './locales/ja';
 import { zhTW } from './locales/zh-TW';
@@ -48,9 +50,9 @@ void i18n
     fallbackLng: 'ja',
     defaultNS: 'translation',
     resources: {
-      ja: { translation: ja },
-      'zh-TW': { translation: zhTW },
-      en: { translation: en },
+      ja: { translation: { ...ja, auth: authText.ja, admin: adminText.ja } },
+      'zh-TW': { translation: { ...zhTW, auth: authText['zh-TW'], admin: adminText['zh-TW'] } },
+      en: { translation: { ...en, auth: authText.en, admin: adminText.en } },
     },
     interpolation: { escapeValue: false },
   });

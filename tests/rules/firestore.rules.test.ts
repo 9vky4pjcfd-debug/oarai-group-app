@@ -56,6 +56,13 @@ describeWithEmulator('Firestore security rules emulator', () => {
     await assertFails(updateDoc(doc(store, 'bookingInventory', 'hotel-a__room__2026-11-01'), { booked: 0 }));
     await assertFails(getDoc(doc(store, 'hotelBookingContacts', 'hotel-a')));
   });
+  it('keeps the email queue, staff roster and counters server-only', async () => {
+    const store = testEnvironment.authenticatedContext('user-a', { role: 'admin' }).firestore();
+    await assertFails(getDoc(doc(store, 'mail', 'm1')));
+    await assertFails(setDoc(doc(store, 'mail', 'm1'), { to: ['x@example.com'], message: { subject: 's', text: 't' } }));
+    await assertFails(setDoc(doc(store, 'staffMembers', 'user-a'), { role: 'admin' }));
+    await assertFails(setDoc(doc(store, 'counters', 'membership'), { next: 1 }));
+  });
   it('denies collections without a rule', async () => {
     await assertFails(getDoc(doc(testEnvironment.authenticatedContext('user-a').firestore(), 'adminSettings', 'x')));
   });

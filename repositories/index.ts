@@ -5,3 +5,4 @@ export * from './member/MemberRepository';
 export * from './points/PointRepository';
 export * from './reservation/ReservationRepository';
 export * from './scoped-id';
+export * from './admin/AdminGateway';

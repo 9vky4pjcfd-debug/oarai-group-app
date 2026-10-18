@@ -5,6 +5,7 @@ import { Badge, Card, EmptyState, Screen, SectionHeader } from '@/components/des
 import { ContentGate } from '@/components/ContentGate';
 import { PageHeader } from '@/components/PageHeader';
 import { colors, radii, spacing, typography } from '@/constants';
+import { SignInPrompt } from '@/features/auth/SignInPrompt';
 import { useLocalized } from '@/features/content';
 import type { LocalizedText, MembershipTier, PointTransactionDocument } from '@/types';
 import { useMemberFormat } from './member-format';
@@ -93,11 +94,11 @@ export function PointHistoryScreen() {
       <PageHeader title={t('member.history')} backLabel={t('common.back')} />
       <SectionHeader eyebrow="HISTORY" title={t('member.history')} description={t('member.sharedNotice')} />
       {identity.isDemo ? <Badge label={t('member.demoMember')} /> : null}
-      <ContentGate state={history} onRetry={history.reload}>
+      {identity.status === 'signed-out' ? <SignInPrompt title={t('member.history')} description={t('member.signInRequired')} redirect="/(tabs)/member/history" /> : <ContentGate state={history} onRetry={history.reload}>
         {({ transactions, hotels }) => transactions.length === 0
           ? <EmptyState title={t('member.historyEmpty')} />
           : <View style={styles.list}>{transactions.map((item) => <TransactionRow key={item.transactionId} item={item} hotelName={item.hotelId ? hotels.get(item.hotelId)?.name : undefined} />)}</View>}
-      </ContentGate>
+      </ContentGate>}
     </Screen>
   );
 }

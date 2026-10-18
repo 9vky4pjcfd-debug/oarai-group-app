@@ -1,0 +1,25 @@
+// Images shipped with the app that backend content can refer to by key (`{ kind: 'bundled', key }`).
+// The keys are paths under assets/, which is also how the seed data names them.
+export const bundledImages: Record<string, number> = {
+  'brand/hero.webp': require('@/assets/brand/hero.webp'),
+  'brand/logo.png': require('@/assets/brand/logo.png'),
+  'content/facility-bath.jpg': require('@/assets/content/facility-bath.jpg'),
+  'content/facility-craft.jpg': require('@/assets/content/facility-craft.jpg'),
+  'content/facility-hinode.jpg': require('@/assets/content/facility-hinode.jpg'),
+  'content/facility-kazenagi.jpg': require('@/assets/content/facility-kazenagi.jpg'),
+  'content/facility-kids.jpg': require('@/assets/content/facility-kids.jpg'),
+  'content/facility-lounge.jpg': require('@/assets/content/facility-lounge.jpg'),
+  'content/facility-play.jpg': require('@/assets/content/facility-play.jpg'),
+  'content/facility-pool.jpg': require('@/assets/content/facility-pool.jpg'),
+  'content/floor-map.jpg': require('@/assets/content/floor-map.jpg'),
+  'content/room-asahi.jpg': require('@/assets/content/room-asahi.jpg'),
+  'content/room-asian.jpg': require('@/assets/content/room-asian.jpg'),
+  'content/room-executive.jpg': require('@/assets/content/room-executive.jpg'),
+  'content/room-japanese.jpg': require('@/assets/content/room-japanese.jpg'),
+  'content/room-jresort.jpg': require('@/assets/content/room-jresort.jpg'),
+  'content/room-moderate.jpg': require('@/assets/content/room-moderate.jpg'),
+  'content/room-neomodern.jpg': require('@/assets/content/room-neomodern.jpg'),
+  'content/room-stylish.jpg': require('@/assets/content/room-stylish.jpg'),
+  'content/room-superior.jpg': require('@/assets/content/room-superior.jpg'),
+  'content/room-yunagi.jpg': require('@/assets/content/room-yunagi.jpg'),
+};

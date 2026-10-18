@@ -2,8 +2,8 @@ import { collection, doc, getDoc, getDocs, query, where } from 'firebase/firesto
 import { httpsCallable } from 'firebase/functions';
 import type { ReservationRepository } from '@/repositories';
 import { getFirestoreClient, getFunctionsClient } from '@/services/firebase';
-import { mapToAppError } from '@/services/errors';
-import { AppError, type BookingRequest, type ReservationDocument, type RoomAvailability, type StaySearch } from '@/types';
+import { mapCallableError, mapToAppError } from '@/services/errors';
+import type { BookingRequest, ReservationDocument, RoomAvailability, StaySearch } from '@/types';
 import { mapFirestoreDates } from './firestore-mappers';
 
 // checkIn / checkOut are stored as hotel-local YYYY-MM-DD strings, so only audit timestamps are mapped.
@@ -12,13 +12,6 @@ const toReservation = (data: Record<string, unknown>) => {
   const mapped = mapFirestoreDates<ReservationDocument>(data, dateFields);
   return { ...mapped, cancelledAt: data.cancelledAt == null ? null : mapFirestoreDates<{ cancelledAt: string }>(data, ['cancelledAt']).cancelledAt };
 };
-
-/** Server details such as `{ reason: 'sold-out' }` become the AppError cause, so the UI can explain them. */
-function mapCallableError(error: unknown): AppError {
-  const mapped = mapToAppError(error);
-  const details = typeof error === 'object' && error !== null && 'details' in error ? (error as { details?: { reason?: unknown } }).details : undefined;
-  return typeof details?.reason === 'string' ? new AppError(mapped.code, mapped.message, { cause: details.reason, retryable: mapped.retryable }) : mapped;
-}
 
 async function call<Request, Response>(name: string, data: Request): Promise<Response> {
   try {

@@ -2,7 +2,7 @@
 
 大洗グループ（大洗ホテル・思い出浪漫館・ドギーズコースト 大洗・魚来庵）の iOS / Android 共用アプリ。React Native、Expo、TypeScript、Expo Router を使用し、Firebase へ安全に接続できる Service / Repository 境界を備えています。
 
-Phase 2 は Backend Foundation のみです。Firebase の実プロジェクト、正式な予約・レストラン待ち・ポイント取引・決済・Push 配信・AI は接続していません。
+Firebase モードでは会員登録・ログイン（メール認証）、グループ共通の会員ランクとポイント、アプリ予約（Cloud Functions）、お知らせ、館スタッフ用の管理画面（販売枠・料金、お知らせ、予約一覧、通知メール先、スタッフ権限）が動きます。レストラン待ち・決済・Push 配信・AI は未接続です。
 
 ## Setup
 
@@ -34,6 +34,7 @@ npm run typecheck
 npm run lint
 npm test
 npm run test:rules
+npm run test:backend   # Cloud Functions end to end on the Auth / Firestore / Functions emulators
 npm run doctor
 npx expo export --platform all
 ```

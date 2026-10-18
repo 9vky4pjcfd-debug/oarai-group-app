@@ -5,3 +5,4 @@ export * from './firestore';
 export * from './membership';
 export * from './models';
 export * from './public-content';
+export * from './admin';

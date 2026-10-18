@@ -26,6 +26,7 @@ jobs:
       - run: npm ci
       - run: npm run typecheck
       - run: npx vitest run --exclude 'tests/rules/**'
+      - run: npm --prefix functions ci && npm --prefix functions run typecheck
       # GitHub Pages serves the site under /<repo>/, so the web build needs that base path.
       - name: Set web base path
         run: jq --arg base "/${GITHUB_REPOSITORY#*/}" '.expo.experiments.baseUrl = $base' app.json > app.tmp.json && mv app.tmp.json app.json

@@ -1,5 +1,5 @@
 import type {
-  AuthSession, AuthState, BathPublicStatusDocument, BookingPolicy, BookingRequest, DateOnly, CouponDocument, FederatedCredential,
+  AdminNotice, AuthSession, BookingContacts, InventoryQuery, InventoryRow, InventoryUpdate, InventoryUpdateResult, ReservationQuery, SeedResult, StaffMember, StaffUpdate, AuthState, BathPublicStatusDocument, BookingPolicy, BookingRequest, DateOnly, CouponDocument, FederatedCredential,
   Facility, FaqItem, FloorGuide, HomeContent, HotelPublicProfile, MembershipTier, MemberProfileDocument, Notice, NotificationPreferences,
   PointAccountDocument, PointTransactionDocument,
   ReservationDocument, RestaurantPublicStatusDocument, Room, RoomOffer, StaySearch,
@@ -10,8 +10,15 @@ export interface AuthService {
   subscribe(listener: (state: AuthState) => void): () => void;
   getSession(): Promise<AuthSession | null>;
   signInWithEmail(email: string, password: string): Promise<AuthSession>;
+  /** Creates an email account and sends the verification email. */
+  signUpWithEmail(email: string, password: string, displayName: string): Promise<AuthSession>;
   signInWithProvider(credential: FederatedCredential): Promise<AuthSession>;
+  sendPasswordReset(email: string): Promise<void>;
+  sendEmailVerification(): Promise<void>;
+  /** Reloads the signed-in user, e.g. after they verified their email or were given a staff role. */
+  refreshSession(): Promise<AuthSession | null>;
   signOut(): Promise<void>;
+  /** Deletes membership, points and the sign-in account. Reservations stay with the hotel. */
   deleteAccount(): Promise<void>;
 }
 
@@ -53,6 +60,8 @@ export interface ReservationService {
 export interface MemberService {
   getProfile(userId: string): Promise<MemberProfileDocument | null>;
   getTiers(): Promise<MembershipTier[]>;
+  /** Creates the signed-in user's group membership and point account if they have none yet; returns the profile. */
+  ensureProfile(input: { displayName: string; preferredLanguage: MemberProfileDocument['preferredLanguage'] }): Promise<MemberProfileDocument>;
 }
 export interface PointService {
   getAccount(userId: string): Promise<PointAccountDocument | null>;
@@ -64,6 +73,33 @@ export interface NotificationService {
   updatePreferences(preferences: NotificationPreferences): Promise<void>;
 }
 
+/**
+ * Hotel-side tools (Firebase mode only). Every call is checked on the server against the caller's
+ * Custom Claims: staff and managers act on their own hotels, admins on every hotel.
+ */
+export interface AdminService {
+  readonly available: boolean;
+  getInventory(query: InventoryQuery): Promise<InventoryRow[]>;
+  updateInventory(update: InventoryUpdate): Promise<InventoryUpdateResult>;
+  getBookingContacts(hotelId: string): Promise<BookingContacts>;
+  /** Managers and admins only. */
+  setBookingContacts(contacts: BookingContacts): Promise<void>;
+  /** Notices of the caller's hotels (and group-wide ones for admins), drafts included, newest first. */
+  listNotices(): Promise<AdminNotice[]>;
+  /** Group-wide notices (`hotelId: null`) need an admin. A new notice gets its ID from the server when `noticeId` is empty. */
+  saveNotice(notice: AdminNotice): Promise<AdminNotice>;
+  deleteNotice(noticeId: string): Promise<void>;
+  listReservations(query: ReservationQuery): Promise<ReservationDocument[]>;
+  /** Admins only. */
+  listStaff(): Promise<StaffMember[]>;
+  /** Admins only. The person must already have an account. */
+  setStaff(update: StaffUpdate): Promise<void>;
+  /** Makes the caller an admin when their verified email is one of the owner addresses set at deploy time. */
+  claimOwner(): Promise<void>;
+  /** Admins only. Writes the bundled hotel, room, facility, FAQ, notice and tier content; existing documents are kept unless `overwrite`. */
+  seedContent(overwrite: boolean): Promise<SeedResult>;
+}
+
 export interface ServiceRegistry {
   auth: AuthService;
   hotelContent: HotelContentService;
@@ -72,4 +108,5 @@ export interface ServiceRegistry {
   member: MemberService;
   points: PointService;
   notifications: NotificationService;
+  admin: AdminService;
 }

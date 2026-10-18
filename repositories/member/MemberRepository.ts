@@ -4,6 +4,8 @@ import type { MembershipTier, MemberProfileDocument } from '@/types';
 export interface MemberRepository {
   getProfile(userId: string): Promise<MemberProfileDocument | null>;
   getTiers(): Promise<MembershipTier[]>;
+  /** Server command: creates the caller's profile and point account when missing. */
+  ensureProfile(input: { displayName: string; preferredLanguage: MemberProfileDocument['preferredLanguage'] }): Promise<MemberProfileDocument>;
 }
 
 export interface MemberVerificationGateway {
