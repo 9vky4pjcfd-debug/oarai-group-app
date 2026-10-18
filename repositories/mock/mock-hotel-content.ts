@@ -86,7 +86,7 @@ export const mockHotelProfile: HotelPublicProfile = {
     lt('展望大浴場', '展望大浴場', 'Panoramic public bath'),
   ],
   address: lt('〒311-1301 茨城県東茨城郡大洗町磯浜町6881', '〒311-1301 茨城縣東茨城郡大洗町磯濱町6881', '6881 Isohamacho, Oarai, Higashiibaraki District, Ibaraki 311-1301'),
-  phone: '0570-200-418',
+  phone: '029-267-2151',
   checkInTime: '15:00',
   checkOutTime: '11:00',
   heroImage: localImage(

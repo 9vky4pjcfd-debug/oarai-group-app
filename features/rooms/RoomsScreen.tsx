@@ -1,11 +1,13 @@
-import { useLocalSearchParams } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
+import { router, useLocalSearchParams, type Href } from 'expo-router';
 import { useState } from 'react';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { AppHeader } from '@/components/AppHeader';
 import { ContentGate } from '@/components/ContentGate';
 import { MenuRow } from '@/components/MenuRow';
-import { CardGrid, CardGridItem, EmptyState, Screen, SectionHeader } from '@/components/design-system';
-import { DEFAULT_HOTEL_ID } from '@/constants';
+import { Button, CardGrid, CardGridItem, EmptyState, Screen, SectionHeader } from '@/components/design-system';
+import { colors, DEFAULT_HOTEL_ID, radii, spacing, typography } from '@/constants';
 import { useHotels, useRooms } from '@/features/content';
 import { HotelPicker } from '@/features/hotels/HotelPicker';
 import { RoomCard } from './RoomCard';
@@ -24,9 +26,15 @@ export function RoomsScreen() {
       <ContentGate state={hotels} onRetry={hotels.reload}>
         {(list) => <HotelPicker hotels={list} selected={hotelId} onSelect={setSelected} />}
       </ContentGate>
-      <MenuRow icon="business-outline" title={t('hotels.viewHotel')} href={{ pathname: '/(tabs)/stay/hotel/[hotelId]', params: { hotelId } }} />
-      <MenuRow icon="calendar-outline" title={t('rooms.reservation')} description={t('rooms.reservationDescription')} href={{ pathname: '/(tabs)/stay/reservation', params: { hotelId } }} />
-      <MenuRow icon="receipt-outline" title={t('booking.myReservations')} description={t('booking.myReservationsDescription')} href="/(tabs)/stay/booking/reservations" />
+      {/* One clear next step (search this hotel), with the two secondary destinations side by side below it. */}
+      <View style={styles.actions}>
+        <Button label={t('rooms.searchThisHotel')} onPress={() => router.push({ pathname: '/(tabs)/stay/reservation', params: { hotelId } })} />
+        <View style={styles.links}>
+          <LinkTile icon="business-outline" label={t('hotels.viewHotel')} href={{ pathname: '/(tabs)/stay/hotel/[hotelId]', params: { hotelId } }} />
+          <LinkTile icon="receipt-outline" label={t('booking.myReservations')} href="/(tabs)/stay/booking/reservations" />
+        </View>
+      </View>
+      <SectionHeader title={t('hotels.rooms')} />
       <HotelRooms hotelId={hotelId} />
     </Screen>
   );
@@ -49,3 +57,20 @@ export function HotelRooms({ hotelId, limit }: { hotelId: string; limit?: number
     </ContentGate>
   );
 }
+
+function LinkTile({ icon, label, href }: { icon: React.ComponentProps<typeof Ionicons>['name']; label: string; href: Href }) {
+  return (
+    <Pressable accessibilityRole="link" onPress={() => router.push(href)} style={({ pressed }) => [styles.tile, pressed && styles.pressed]}>
+      <Ionicons color={colors.accent} name={icon} size={20} />
+      <Text numberOfLines={1} style={styles.tileLabel}>{label}</Text>
+    </Pressable>
+  );
+}
+
+const styles = StyleSheet.create({
+  actions: { gap: spacing.xs },
+  links: { flexDirection: 'row', gap: spacing.xs },
+  tile: { alignItems: 'center', backgroundColor: colors.surface, borderColor: colors.border, borderRadius: radii.md, borderWidth: 1, flex: 1, flexDirection: 'row', gap: spacing.xs, justifyContent: 'center', minHeight: 48, paddingHorizontal: spacing.sm },
+  pressed: { opacity: 0.75 },
+  tileLabel: { ...typography.label, color: colors.text, flexShrink: 1 },
+});

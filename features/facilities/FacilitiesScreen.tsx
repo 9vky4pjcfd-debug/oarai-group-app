@@ -54,7 +54,7 @@ function HotelFacilities({ hotelId, hotel }: { hotelId: string; hotel: HotelPubl
         <CardGrid>
           {list.map((facility) => {
             const image = facility.images[0];
-            return <CardGridItem key={facility.facilityId}><ContentCard image={image ? resolveContentImage(image) : undefined} meta={l(facility.location)} title={l(facility.name)} description={l(facility.shortDescription)} href={{ pathname: '/(tabs)/facilities/[id]', params: { id: facility.facilityId } }} /></CardGridItem>;
+            return <CardGridItem key={facility.facilityId}><ContentCard compact image={image ? resolveContentImage(image) : undefined} meta={l(facility.location)} title={l(facility.name)} description={l(facility.shortDescription)} href={{ pathname: '/(tabs)/facilities/[id]', params: { id: facility.facilityId } }} /></CardGridItem>;
           })}
         </CardGrid>
       )}
